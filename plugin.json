@@ -1,0 +1,34 @@
+{
+	"id": "nodebb-plugin-custom-pages",
+	"name": "Custom Static pages for NodeBB",
+	"description": "Allows you to add as many new pages as you like to your NodeBB forum",
+	"url": "https://github.com/NodeBB/nodebb-plugin-custom-pages",
+	"library": "./library.js",
+	"hooks": [
+		{
+			"hook": "action:app.load", "method": "init"
+		},
+		{
+			"hook": "filter:header.build", "method": "addNavigation"
+		},
+		{
+			"hook": "filter:admin.header.build", "method": "addAdminNavigation"
+		},
+		{
+			"hook": "filter:widgets.getAreas", "method": "setWidgetAreas"
+		},
+		{
+			"hook": "filter:templates.get_virtual", "method": "setAvailableTemplates"
+		}
+	],
+	"staticDirs": {
+		"static": "./static"
+	},
+	"less": [
+		"static/style.less"
+	],
+	"scripts": [
+		"static/lib/main.js"
+	],
+	"templates": "./templates"
+}

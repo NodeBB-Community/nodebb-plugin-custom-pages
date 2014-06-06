@@ -1,0 +1,26 @@
+{
+  "name": "nodebb-plugin-custom-pages",
+  "version": "0.0.1",
+  "description": "Allows you to add as many new pages as you like to your NodeBB forum",
+  "main": "library.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/psychobunny/nodebb-plugin-custom-pages"
+  },
+  "keywords": [
+    "nodebb",
+    "plugin",
+    "static",
+    "custom",
+    "page"
+  ],
+  "author": {
+    "name": "psychobunny",
+    "email": "psycho.bunny@hotmail.com"
+  },
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/psychobunny/nodebb-plugin-custom-pages/issues"
+  },
+  "readmeFilename": "README.md"
+}
