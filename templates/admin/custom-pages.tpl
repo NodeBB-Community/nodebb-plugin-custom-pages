@@ -45,14 +45,21 @@
 <button class="btn btn-lg btn-primary" id="save">Save</button>
 
 <script>
+
+function addCloseHandler() {
+    $('#custom-pages .fa-times').on('click', function() {
+        $(this).parents('.well').remove();
+    });
+}
+
 $('#add').on('click', function(ev) {
     var clone = $('.template').clone().removeClass('template hidden');
     $('#custom-pages').append(clone);
 
-    $('#custom-pages .fa-times').on('click', function() {
-        $(this).parents('.well').remove();
-    });
+    addCloseHandler();
 });
+
+addCloseHandler();
 
 $('#save').on('click', function(ev) {
     var arr = [];
