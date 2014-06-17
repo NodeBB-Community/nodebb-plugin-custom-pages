@@ -83,7 +83,8 @@ plugin.addNavigation = function(header, callback) {
 				header.navigation.push({
 					"class": data[d].class,
 					"route": "/" + data[d].route,
-					"text": data[d].name
+					"text": data[d].name,
+					"title": data[d].name
 				});
 			}
 		}
