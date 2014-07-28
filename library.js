@@ -93,7 +93,7 @@ plugin.addNavigation = function(header, callback) {
 	});
 };
 
-plugin.init = function(app, middleware, controllers) {
+plugin.init = function(app, middleware, controllers, callback) {
 	app.get('/admin/custom-pages', middleware.admin.buildHeader, renderAdmin);
 	app.get('/api/admin/custom-pages', renderAdmin);
 
@@ -112,6 +112,8 @@ plugin.init = function(app, middleware, controllers) {
 	SocketAdmin.settings.saveCustomPages = function(socket, data, callback) {
 		db.set('plugins:custom-pages', JSON.stringify(data), callback);
 	};
+
+	callback();
 };
 
 module.exports = plugin;
