@@ -93,7 +93,11 @@ plugin.addNavigation = function(header, callback) {
 	});
 };
 
-plugin.init = function(app, middleware, controllers, callback) {
+plugin.init = function(params, callback) {
+	var app = params.app,
+		middleware = params.middleware,
+		controllers = params.controllers;
+		
 	app.get('/admin/custom-pages', middleware.admin.buildHeader, renderAdmin);
 	app.get('/api/admin/custom-pages', renderAdmin);
 
