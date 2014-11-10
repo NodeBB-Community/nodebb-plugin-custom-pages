@@ -18,6 +18,9 @@
     "name": "psychobunny",
     "email": "psycho.bunny@hotmail.com"
   },
+  "nbbpm": {
+    "compatibility": "^0.6.0"
+  },
   "license": "BSD-2-Clause",
   "bugs": {
     "url": "https://github.com/psychobunny/nodebb-plugin-custom-pages/issues"
