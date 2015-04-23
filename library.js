@@ -1,10 +1,14 @@
 "use strict";
 
 var plugin = {},
-	db = module.parent.require('./database');
+	db = module.parent.require('./database'),
+	nconf = module.parent.require('nconf'),
+	fs = require('fs'),
+	path = require('path');
 
 function renderCustomPage(req, res, next) {
-	res.render('custom-page', {});
+	var path = req.path.replace(/\/(api\/)?/, '');
+	res.render(path, {});
 }
 
 function renderAdmin(req, res, next) {
@@ -101,15 +105,20 @@ plugin.init = function(params, callback) {
 	app.get('/admin/custom-pages', middleware.admin.buildHeader, renderAdmin);
 	app.get('/api/admin/custom-pages', renderAdmin);
 
-	getCustomPages(function(err, data) {
-		for (var d in data) {
-			if (data.hasOwnProperty(d)) {
-				var route = data[d].route;
-				app.get('/' + route, middleware.buildHeader, renderCustomPage);
-				app.get('/templates/' + route + '.tpl', renderCustomPage);
-				app.get('/api/' + route, renderCustomPage);
+	fs.readFile(path.join(__dirname, 'templates/custom-page.tpl'), function(err, customTPL) {
+		customTPL = customTPL.toString();
+
+		getCustomPages(function(err, data) {
+			for (var d in data) {
+				if (data.hasOwnProperty(d)) {
+					var route = data[d].route;
+					app.get('/' + route, middleware.buildHeader, renderCustomPage);
+					app.get('/api/' + route, renderCustomPage);
+					fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL);
+					console.log(route);
+				}
 			}
-		}
+		});
 	});
 
 	var SocketAdmin = module.parent.require('./socket.io/admin');
