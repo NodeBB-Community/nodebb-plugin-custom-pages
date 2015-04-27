@@ -118,7 +118,6 @@ plugin.init = function(params, callback) {
 
 					emitter.on('templates:compiled', function() {
 						fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL);
-						console.log(route);
 					});
 				}
 			}
