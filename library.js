@@ -2,6 +2,7 @@
 
 var plugin = {},
 	db = module.parent.require('./database'),
+	emitter = module.parent.require('./emitter'),
 	nconf = module.parent.require('nconf'),
 	fs = require('fs'),
 	path = require('path');
@@ -114,8 +115,11 @@ plugin.init = function(params, callback) {
 					var route = data[d].route;
 					app.get('/' + route, middleware.buildHeader, renderCustomPage);
 					app.get('/api/' + route, renderCustomPage);
-					fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL);
-					console.log(route);
+
+					emitter.on('templates:compiled', function() {
+						fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL);
+						console.log(route);
+					});
 				}
 			}
 		});
