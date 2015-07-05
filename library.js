@@ -1,6 +1,6 @@
 "use strict";
 
-var plugin = {},
+var CustomPages = {},
 	db = module.parent.require('./database'),
 	emitter = module.parent.require('./emitter'),
 	nconf = module.parent.require('nconf'),
@@ -9,9 +9,9 @@ var plugin = {},
 
 // quick fix for; checked in init()
 // https://github.com/psychobunny/nodebb-plugin-custom-pages/issues/10
-plugin.compiled = false;
+CustomPages.compiled = false;
 emitter.on('templates:compiled', function() {
-	plugin.compiled = true;
+	CustomPages.compiled = true;
 });
 
 function renderCustomPage(req, res, next) {
@@ -33,7 +33,7 @@ function getCustomPages(callback) {
 	});
 }
 
-plugin.setAvailableTemplates = function(templates, callback) {
+CustomPages.setAvailableTemplates = function(templates, callback) {
 	getCustomPages(function(err, data) {
 		for (var d in data) {
 			if (data.hasOwnProperty(d)) {
@@ -45,7 +45,7 @@ plugin.setAvailableTemplates = function(templates, callback) {
 	});
 };
 
-plugin.setWidgetAreas = function(areas, callback) {
+CustomPages.setWidgetAreas = function(areas, callback) {
 	getCustomPages(function(err, data) {
 		for (var d in data) {
 			if (data.hasOwnProperty(d)) {
@@ -78,7 +78,7 @@ plugin.setWidgetAreas = function(areas, callback) {
 	});
 };
 
-plugin.addAdminNavigation = function(header, callback) {
+CustomPages.addAdminNavigation = function(header, callback) {
 	header.plugins.push({
 		route: '/custom-pages',
 		icon: 'fa-mobile',
@@ -88,7 +88,7 @@ plugin.addAdminNavigation = function(header, callback) {
 	callback(null, header);
 };
 
-plugin.addNavigation = function(header, callback) {
+CustomPages.addNavigation = function(header, callback) {
 	getCustomPages(function(err, data) {
 		for (var d in data) {
 			if (data.hasOwnProperty(d)) {
@@ -105,7 +105,7 @@ plugin.addNavigation = function(header, callback) {
 	});
 };
 
-plugin.init = function(params, callback) {
+CustomPages.init = function(params, callback) {
 	var app = params.router,
 		middleware = params.middleware,
 		controllers = params.controllers;
@@ -123,7 +123,7 @@ plugin.init = function(params, callback) {
 					app.get('/' + route, middleware.buildHeader, renderCustomPage);
 					app.get('/api/' + route, renderCustomPage);
 
-					if (plugin.compiled) {
+					if (CustomPages.compiled) {
 						fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL);
 					} else {
 						emitter.on('templates:compiled', function() {
@@ -143,4 +143,4 @@ plugin.init = function(params, callback) {
 	callback();
 };
 
-module.exports = plugin;
+module.exports = CustomPages;
