@@ -7,6 +7,13 @@ var plugin = {},
 	fs = require('fs'),
 	path = require('path');
 
+// quick fix for; checked in init()
+// https://github.com/psychobunny/nodebb-plugin-custom-pages/issues/10
+plugin.compiled = false;
+emitter.on('templates:compiled', function() {
+	plugin.compiled = true;
+});
+
 function renderCustomPage(req, res, next) {
 	var path = req.path.replace(/\/(api\/)?/, '');
 	res.render(path, {});
@@ -102,7 +109,7 @@ plugin.init = function(params, callback) {
 	var app = params.router,
 		middleware = params.middleware,
 		controllers = params.controllers;
-		
+
 	app.get('/admin/custom-pages', middleware.admin.buildHeader, renderAdmin);
 	app.get('/api/admin/custom-pages', renderAdmin);
 
@@ -116,9 +123,13 @@ plugin.init = function(params, callback) {
 					app.get('/' + route, middleware.buildHeader, renderCustomPage);
 					app.get('/api/' + route, renderCustomPage);
 
-					emitter.on('templates:compiled', function() {
+					if (plugin.compiled) {
 						fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL);
-					});
+					} else {
+						emitter.on('templates:compiled', function() {
+							fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL);
+						});
+					}
 				}
 			}
 		});
