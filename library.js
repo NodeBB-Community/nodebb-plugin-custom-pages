@@ -1,11 +1,18 @@
 "use strict";
 
-var plugin = {},
+var CustomPages = {},
 	db = module.parent.require('./database'),
 	emitter = module.parent.require('./emitter'),
 	nconf = module.parent.require('nconf'),
 	fs = require('fs'),
 	path = require('path');
+
+// quick fix for; checked in init()
+// https://github.com/psychobunny/nodebb-plugin-custom-pages/issues/10
+CustomPages.compiled = false;
+emitter.on('templates:compiled', function() {
+	CustomPages.compiled = true;
+});
 
 function renderCustomPage(req, res, next) {
 	var path = req.path.replace(/\/(api\/)?/, '');
@@ -26,7 +33,7 @@ function getCustomPages(callback) {
 	});
 }
 
-plugin.setAvailableTemplates = function(templates, callback) {
+CustomPages.setAvailableTemplates = function(templates, callback) {
 	getCustomPages(function(err, data) {
 		for (var d in data) {
 			if (data.hasOwnProperty(d)) {
@@ -38,7 +45,7 @@ plugin.setAvailableTemplates = function(templates, callback) {
 	});
 };
 
-plugin.setWidgetAreas = function(areas, callback) {
+CustomPages.setWidgetAreas = function(areas, callback) {
 	getCustomPages(function(err, data) {
 		for (var d in data) {
 			if (data.hasOwnProperty(d)) {
@@ -71,7 +78,7 @@ plugin.setWidgetAreas = function(areas, callback) {
 	});
 };
 
-plugin.addAdminNavigation = function(header, callback) {
+CustomPages.addAdminNavigation = function(header, callback) {
 	header.plugins.push({
 		route: '/custom-pages',
 		icon: 'fa-mobile',
@@ -81,7 +88,7 @@ plugin.addAdminNavigation = function(header, callback) {
 	callback(null, header);
 };
 
-plugin.addNavigation = function(header, callback) {
+CustomPages.addNavigation = function(header, callback) {
 	getCustomPages(function(err, data) {
 		for (var d in data) {
 			if (data.hasOwnProperty(d)) {
@@ -98,11 +105,11 @@ plugin.addNavigation = function(header, callback) {
 	});
 };
 
-plugin.init = function(params, callback) {
+CustomPages.init = function(params, callback) {
 	var app = params.router,
 		middleware = params.middleware,
 		controllers = params.controllers;
-		
+
 	app.get('/admin/custom-pages', middleware.admin.buildHeader, renderAdmin);
 	app.get('/api/admin/custom-pages', renderAdmin);
 
@@ -116,9 +123,13 @@ plugin.init = function(params, callback) {
 					app.get('/' + route, middleware.buildHeader, renderCustomPage);
 					app.get('/api/' + route, renderCustomPage);
 
-					emitter.on('templates:compiled', function() {
+					if (CustomPages.compiled) {
 						fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL);
-					});
+					} else {
+						emitter.on('templates:compiled', function() {
+							fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL);
+						});
+					}
 				}
 			}
 		});
@@ -132,4 +143,4 @@ plugin.init = function(params, callback) {
 	callback();
 };
 
-module.exports = plugin;
+module.exports = CustomPages;
