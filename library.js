@@ -5,7 +5,9 @@ var plugin = {},
 	emitter = module.parent.require('./emitter'),
 	nconf = module.parent.require('nconf'),
 	fs = require('fs'),
-	path = require('path');
+	path = require('path'),
+	plugin = require('./plugin.json'),
+	plugins = module.parent.require('./plugins');
 
 function renderCustomPage(req, res, next) {
 	var path = req.path.replace(/\/(api\/)?/, '');
@@ -25,6 +27,19 @@ function getCustomPages(callback) {
 		callback(err, JSON.parse(data));
 	});
 }
+
+plugin.addListings = function(listings, callback) {
+	getCustomPages(function(err, data) {
+		for(var d in data)
+			if(data.hasOwnProperty(d))
+				listings.routes.push({
+					route: data[d].route,
+					name: data[d].name
+				});
+
+		callback(err, listings);
+	});
+};
 
 plugin.setAvailableTemplates = function(templates, callback) {
 	getCustomPages(function(err, data) {
@@ -118,6 +133,19 @@ plugin.init = function(params, callback) {
 
 					emitter.on('templates:compiled', function() {
 						fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL);
+					
+						//Homepage hooks
+						plugins.registerHook(plugin.id, {
+							hook: 'action:homepage.get:'+data[d].name,
+							method: function(params) {
+								params.res.render(data[d].route, {
+									template: {
+										name: data[d].route
+									}
+								})
+							}
+						});
+
 					});
 				}
 			}
