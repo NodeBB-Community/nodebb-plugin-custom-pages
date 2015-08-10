@@ -26,6 +26,19 @@ function getCustomPages(callback) {
 	});
 }
 
+plugin.addListings = function(listings, callback) {
+	getCustomPages(function(err, data) {
+		for(var d in data)
+			if(data.hasOwnProperty(d))
+				listings.routes.push({
+					route: ,
+					name: 
+				});
+
+		callback(err, listings);
+	});
+};
+
 plugin.setAvailableTemplates = function(templates, callback) {
 	getCustomPages(function(err, data) {
 		for (var d in data) {

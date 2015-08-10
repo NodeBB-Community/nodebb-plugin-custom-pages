@@ -19,6 +19,9 @@
 		},
 		{
 			"hook": "filter:templates.get_virtual", "method": "setAvailableTemplates"
+		},
+		{
+			"hook": "filter:homepage.get", "method": "addListings"
 		}
 	],
 	"staticDirs": {
