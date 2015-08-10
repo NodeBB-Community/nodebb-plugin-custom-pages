@@ -31,8 +31,8 @@ plugin.addListings = function(listings, callback) {
 		for(var d in data)
 			if(data.hasOwnProperty(d))
 				listings.routes.push({
-					route: ,
-					name: 
+					route: data[d].route,
+					name: data[d].name
 				});
 
 		callback(err, listings);
@@ -131,6 +131,10 @@ plugin.init = function(params, callback) {
 
 					emitter.on('templates:compiled', function() {
 						fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL);
+					
+					//Homepage hooks
+
+
 					});
 				}
 			}
