@@ -5,7 +5,9 @@ var plugin = {},
 	emitter = module.parent.require('./emitter'),
 	nconf = module.parent.require('nconf'),
 	fs = require('fs'),
-	path = require('path');
+	path = require('path'),
+	plugin = require('./plugin.json'),
+	plugins = module.parent.require('./plugins');
 
 function renderCustomPage(req, res, next) {
 	var path = req.path.replace(/\/(api\/)?/, '');
@@ -132,8 +134,17 @@ plugin.init = function(params, callback) {
 					emitter.on('templates:compiled', function() {
 						fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL);
 					
-					//Homepage hooks
-
+						//Homepage hooks
+						plugins.registerHook(plugin.id, {
+							hook: 'action:homepage.get:'+data[d].name,
+							method: function(params) {
+								params.res.render(data[d].route, {
+									template: {
+										name: data[d].route
+									}
+								})
+							}
+						})
 
 					});
 				}
