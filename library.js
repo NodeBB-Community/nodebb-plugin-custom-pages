@@ -144,7 +144,7 @@ plugin.init = function(params, callback) {
 									}
 								})
 							}
-						})
+						});
 
 					});
 				}
