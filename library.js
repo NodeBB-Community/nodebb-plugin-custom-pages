@@ -2,7 +2,6 @@
 
 var plugin = {},
 	db = module.parent.require('./database'),
-	emitter = module.parent.require('./emitter'),
 	nconf = module.parent.require('nconf'),
 	fs = require('fs'),
 	path = require('path');
@@ -116,9 +115,8 @@ plugin.init = function(params, callback) {
 					app.get('/' + route, middleware.buildHeader, renderCustomPage);
 					app.get('/api/' + route, renderCustomPage);
 
-					emitter.on('templates:compiled', function() {
-						fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL);
-					});
+					// Add template to compiled templates directory
+					fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL);
 				}
 			}
 		});
