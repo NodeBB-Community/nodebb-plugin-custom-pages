@@ -2,7 +2,6 @@
 
 var plugin = {},
 	db = module.parent.require('./database'),
-	emitter = module.parent.require('./emitter'),
 	nconf = module.parent.require('nconf'),
 	fs = require('fs'),
 	path = require('path');
