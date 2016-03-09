@@ -3,7 +3,10 @@
 var plugin = {},
 	db = module.parent.require('./database'),
 	nconf = module.parent.require('nconf'),
-	fs = require('fs'),
+	async = module.parent.require('async'),
+	mkdirp = module.parent.require('mkdirp');
+
+var	fs = require('fs'),
 	path = require('path');
 
 function renderCustomPage(req, res, next) {
@@ -21,7 +24,19 @@ function renderAdmin(req, res, next) {
 
 function getCustomPages(callback) {
 	db.get('plugins:custom-pages', function(err, data) {
-		callback(err, JSON.parse(data));
+		try {
+			var pages = JSON.parse(data);
+
+			// Eliminate errors in route definition
+			pages = pages.map(function(pageObj) {
+				pageObj.route = pageObj.route.replace(/^\/*/g, '');	// trim leading slashes from route
+				return pageObj;
+			});
+
+			callback(null, pages);
+		} catch (err) {
+			callback(err);
+		}
 	});
 }
 
@@ -100,7 +115,8 @@ plugin.addNavigation = function(header, callback) {
 plugin.init = function(params, callback) {
 	var app = params.router,
 		middleware = params.middleware,
-		controllers = params.controllers;
+		controllers = params.controllers,
+		helpers = module.parent.require('./routes/helpers');
 		
 	app.get('/admin/custom-pages', middleware.admin.buildHeader, renderAdmin);
 	app.get('/api/admin/custom-pages', renderAdmin);
@@ -108,16 +124,24 @@ plugin.init = function(params, callback) {
 	fs.readFile(path.join(__dirname, 'templates/custom-page.tpl'), function(err, customTPL) {
 		customTPL = customTPL.toString();
 
-		getCustomPages(function(err, data) {
-			for (var d in data) {
-				if (data.hasOwnProperty(d)) {
-					var route = data[d].route;
-					app.get('/' + route, middleware.buildHeader, renderCustomPage);
-					app.get('/api/' + route, renderCustomPage);
+		getCustomPages(function(err, pages) {
+			async.each(pages, function(pageObj, next) {
+				var route = pageObj.route;
+				helpers.setupPageRoute(app, '/' + route, middleware, [], renderCustomPage);
 
-					fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL);
+				if (path.dirname(route) !== '.') {
+					// Subdirectories specified
+					mkdirp(path.join(nconf.get('views_dir'), path.dirname(route)), function(err) {
+						if (err) {
+							return next(err);
+						}
+
+						fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL, next);
+					});
+				} else {
+					fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL, next);
 				}
-			}
+			});
 		});
 	});
 
