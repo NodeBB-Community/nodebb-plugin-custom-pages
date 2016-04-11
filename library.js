@@ -27,6 +27,10 @@ function getCustomPages(callback) {
 		try {
 			var pages = JSON.parse(data);
 
+			if (pages == null) {
+				pages = [];
+			}
+
 			// Eliminate errors in route definition
 			pages = pages.map(function(pageObj) {
 				pageObj.route = pageObj.route.replace(/^\/*/g, '');	// trim leading slashes from route
