@@ -89,7 +89,7 @@
         });
 
         socket.emit('admin.settings.saveCustomPages', arr, function() {
-            app.alertSuccess('Saved custom pages - please restart your forum to activate the new routes.');
+            app.alertSuccess('Custom pages saved and activated');
         });
     });
 </script>

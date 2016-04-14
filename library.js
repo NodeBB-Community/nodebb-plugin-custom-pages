@@ -1,20 +1,25 @@
 "use strict";
+/* globals module, require, __dirname */
 
 var plugin = {},
 	db = module.parent.require('./database'),
-	nconf = module.parent.require('nconf'),
+	hotswap = module.parent.require('./hotswap');
+
+var nconf = module.parent.require('nconf'),
 	async = module.parent.require('async'),
-	mkdirp = module.parent.require('mkdirp');
+	mkdirp = module.parent.require('mkdirp'),
+	winston = module.parent.require('winston'),
+	express = module.parent.require('express');
 
 var	fs = require('fs'),
 	path = require('path');
 
-function renderCustomPage(req, res, next) {
+function renderCustomPage(req, res) {
 	var path = req.path.replace(/\/(api\/)?/, '');
 	res.render(path, {});
 }
 
-function renderAdmin(req, res, next) {
+function renderAdmin(req, res) {
 	getCustomPages(function(err, data) {
 		res.render('admin/custom-pages', {
 			pages: data
@@ -27,7 +32,7 @@ function getCustomPages(callback) {
 		try {
 			var pages = JSON.parse(data);
 
-			if (pages == null) {
+			if (pages === null) {
 				pages = [];
 			}
 
@@ -43,6 +48,11 @@ function getCustomPages(callback) {
 		}
 	});
 }
+
+plugin.prepare = function(hotswapIds, callback) {
+	hotswapIds.push('custom-pages');
+	callback(null, hotswapIds);
+};
 
 plugin.setAvailableTemplates = function(templates, callback) {
 	getCustomPages(function(err, data) {
@@ -118,12 +128,27 @@ plugin.addNavigation = function(header, callback) {
 
 plugin.init = function(params, callback) {
 	var app = params.router,
-		middleware = params.middleware,
-		controllers = params.controllers,
-		helpers = module.parent.require('./routes/helpers');
+		middleware = params.middleware;
 		
 	app.get('/admin/custom-pages', middleware.admin.buildHeader, renderAdmin);
 	app.get('/api/admin/custom-pages', renderAdmin);
+
+	var SocketAdmin = module.parent.require('./socket.io/admin');
+	SocketAdmin.settings.saveCustomPages = function(socket, data, callback) {
+		async.series([
+			async.apply(db.set, 'plugins:custom-pages', JSON.stringify(data)),
+			async.apply(plugin.reloadRoutes, middleware)
+		], callback);
+	};
+
+	plugin.reloadRoutes(middleware, callback);
+};
+
+plugin.reloadRoutes = function(middleware, callback) {
+	var pagesRouter = express.Router(),
+		helpers = module.parent.require('./routes/helpers');
+
+	pagesRouter.hotswapId = 'custom-pages';
 
 	fs.readFile(path.join(__dirname, 'templates/custom-page.tpl'), function(err, customTPL) {
 		customTPL = customTPL.toString();
@@ -131,7 +156,7 @@ plugin.init = function(params, callback) {
 		getCustomPages(function(err, pages) {
 			async.each(pages, function(pageObj, next) {
 				var route = pageObj.route;
-				helpers.setupPageRoute(app, '/' + route, middleware, [], renderCustomPage);
+				helpers.setupPageRoute(pagesRouter, '/' + route, middleware, [], renderCustomPage);
 
 				if (path.dirname(route) !== '.') {
 					// Subdirectories specified
@@ -145,16 +170,18 @@ plugin.init = function(params, callback) {
 				} else {
 					fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL, next);
 				}
+			}, function(err) {
+				if (err) {
+					winston.error('[plugin/custom-pages] Could not re-initialise routes!');
+					winston.error('  ' + err.message);
+					return callback(err);
+				}
+
+				hotswap.replace('custom-pages', pagesRouter);
+				callback();
 			});
 		});
 	});
-
-	var SocketAdmin = module.parent.require('./socket.io/admin');
-	SocketAdmin.settings.saveCustomPages = function(socket, data, callback) {
-		db.set('plugins:custom-pages', JSON.stringify(data), callback);
-	};
-
-	callback();
 };
 
 module.exports = plugin;
