@@ -146,6 +146,9 @@ plugin.init = function(params, callback) {
 
 	var SocketAdmin = module.parent.require('./socket.io/admin');
 	SocketAdmin.settings.saveCustomPages = function(socket, data, callback) {
+		delete plugin.pagesCache;
+		delete plugin.pagesHash;
+
 		async.series([
 			async.apply(db.set, 'plugins:custom-pages', JSON.stringify(data)),
 			async.apply(plugin.reloadRoutes, middleware)
@@ -193,15 +196,6 @@ plugin.reloadRoutes = function(middleware, callback) {
 			});
 		});
 	});
-	var SocketAdmin = module.parent.require('./socket.io/admin');
-	SocketAdmin.settings.saveCustomPages = function(socket, data, callback) {
-		delete plugin.pagesCache;
-		delete plugin.pagesHash;
-
-		db.set('plugins:custom-pages', JSON.stringify(data), callback);
-	};
-
-	callback();
 };
 
 module.exports = plugin;
