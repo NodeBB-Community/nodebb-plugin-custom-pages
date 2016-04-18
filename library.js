@@ -11,7 +11,9 @@ var	fs = require('fs'),
 
 function renderCustomPage(req, res, next) {
 	var path = req.path.replace(/\/(api\/)?/, '');
-	res.render(path, {});
+	res.render(path, {
+		title: plugin.pagesHash[path].name
+	});
 }
 
 function renderAdmin(req, res, next) {
@@ -23,25 +25,34 @@ function renderAdmin(req, res, next) {
 }
 
 function getCustomPages(callback) {
-	db.get('plugins:custom-pages', function(err, data) {
-		try {
-			var pages = JSON.parse(data);
+	if (plugin.pagesCache) {
+		return callback(null, plugin.pagesCache);
+	} else {
+		db.get('plugins:custom-pages', function(err, data) {
+			try {
+				var pages = JSON.parse(data);
 
-			if (pages == null) {
-				pages = [];
+				if (pages == null) {
+					pages = [];
+				}
+
+				// Eliminate errors in route definition
+				plugin.pagesCache = pages.map(function(pageObj) {
+					pageObj.route = pageObj.route.replace(/^\/*/g, '');	// trim leading slashes from route
+					return pageObj;
+				});
+
+				plugin.pagesHash = plugin.pagesCache.reduce(function(memo, cur) {
+					memo[cur.route] = cur;
+					return memo;
+				}, {});
+
+				callback(null, plugin.pagesCache);
+			} catch (err) {
+				callback(err);
 			}
-
-			// Eliminate errors in route definition
-			pages = pages.map(function(pageObj) {
-				pageObj.route = pageObj.route.replace(/^\/*/g, '');	// trim leading slashes from route
-				return pageObj;
-			});
-
-			callback(null, pages);
-		} catch (err) {
-			callback(err);
-		}
-	});
+		});
+	}
 }
 
 plugin.setAvailableTemplates = function(templates, callback) {
@@ -151,6 +162,9 @@ plugin.init = function(params, callback) {
 
 	var SocketAdmin = module.parent.require('./socket.io/admin');
 	SocketAdmin.settings.saveCustomPages = function(socket, data, callback) {
+		delete plugin.pagesCache;
+		delete plugin.pagesHash;
+
 		db.set('plugins:custom-pages', JSON.stringify(data), callback);
 	};
 
