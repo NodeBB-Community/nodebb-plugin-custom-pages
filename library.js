@@ -15,7 +15,7 @@ var	fs = require('fs'),
 	path = require('path');
 
 function renderCustomPage(req, res) {
-	var path = req.path.replace(/\/(api\/)?/, '');
+	var path = req.path.replace(/\/(api\/)?/, '').replace(/\/$/, '');
 	res.render(path, {
 		title: plugin.pagesHash[path].name
 	});
