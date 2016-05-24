@@ -51,11 +51,14 @@
     </form>
 </div>
 
-<button class="btn btn-lg btn-success pull-right" id="add"><i class="fa fa-plus"></i> Add New Page</button>
-
-<button id="save" class="floating-button mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
-    <i class="material-icons">save</i>
-</button>
+<div class="floating-button">
+    <button id="add" class="success mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+        <i class="material-icons">note_add</i>
+    </button>
+    <button id="save" class="primary btn-primary mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+        <i class="material-icons">save</i>
+    </button>
+</div>
 
 <script>
     function addCloseHandler() {
