@@ -9,7 +9,8 @@ var nconf = module.parent.require('nconf'),
 	async = module.parent.require('async'),
 	mkdirp = module.parent.require('mkdirp'),
 	winston = module.parent.require('winston'),
-	express = module.parent.require('express');
+	express = module.parent.require('express'),
+	middleware;
 
 var	fs = require('fs'),
 	path = require('path');
@@ -138,8 +139,9 @@ plugin.addNavigation = function(header, callback) {
 };
 
 plugin.init = function(params, callback) {
-	var app = params.router,
-		middleware = params.middleware;
+	var app = params.router;
+
+	middleware = params.middleware;
 		
 	app.get('/admin/custom-pages', middleware.admin.buildHeader, renderAdmin);
 	app.get('/api/admin/custom-pages', renderAdmin);
@@ -151,14 +153,14 @@ plugin.init = function(params, callback) {
 
 		async.series([
 			async.apply(db.set, 'plugins:custom-pages', JSON.stringify(data)),
-			async.apply(plugin.reloadRoutes, middleware)
+			async.apply(plugin.reloadRoutes)
 		], callback);
 	};
 
-	plugin.reloadRoutes(middleware, callback);
+	plugin.reloadRoutes(callback);
 };
 
-plugin.reloadRoutes = function(middleware, callback) {
+plugin.reloadRoutes = function(callback) {
 	var pagesRouter = express.Router(),
 		helpers = module.parent.require('./routes/helpers');
 
