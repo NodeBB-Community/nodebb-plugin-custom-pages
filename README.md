@@ -12,6 +12,4 @@ After creating or removing a new route, you have to restart NodeBB in order for 
 
 ## TODO
 
-* Being able to move around the routes in the header, this will be done in core first (see [this issue](https://github.com/NodeBB/NodeBB/issues/1481)). Right now, the routes will show up in the menu based on when you defined them.
-
 * Move all widgets to draft zone if you delete a static page
