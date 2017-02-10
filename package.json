@@ -1,6 +1,6 @@
 {
   "name": "nodebb-plugin-custom-pages",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Allows you to add as many new pages as you like to your NodeBB forum",
   "main": "library.js",
   "repository": {
