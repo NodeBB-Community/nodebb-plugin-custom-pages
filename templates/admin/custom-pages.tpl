@@ -5,7 +5,7 @@
             Define and customise your new routes here.
         </p>
         <p>
-            Once restarted, you will be able to add content to your new routes from <a href="{config.relative_path}/admin/extend/widgets">Extend &rarr; Widgets</a>.
+           You can add content to your new routes from <a href="{config.relative_path}/admin/extend/widgets">Extend &rarr; Widgets</a>.
         </p>
         <p>
             By default, your routes are only accessible if you know the URL. You can add your new route to the site navigation from <a href="{config.relative_path}/admin/general/navigation">General &rarr; Navigation</a>
