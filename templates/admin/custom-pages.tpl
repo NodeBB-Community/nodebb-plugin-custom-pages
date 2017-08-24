@@ -16,15 +16,15 @@
                     <span class="pull-right"><i class="fa fa-times pointer"></i></span>
 
                     <label>Name of page
-                    <input type="text" class="form-control" name="name" value="{pages.name}" />
+                    <input type="text" class="form-control" name="name" value="{pages.name}" placeholder="Page Title" />
                     </label>
 
                     <label>Route (no spaces)
-                    <input type="text" class="form-control" name="route" value="{pages.route}" />
+                    <input type="text" class="form-control" name="route" value="{pages.route}" placeholder="/my-page" />
                     </label>
 
                     <label>Custom CSS Class
-                    <input type="text" class="form-control" name="class" value="{pages.class}" />
+                    <input type="text" class="form-control" name="class" value="{pages.class}" placeholder="" />
                     </label>
                 </form>
             </div>
