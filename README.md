@@ -7,7 +7,3 @@ Allows you to add as many new pages as you like to your NodeBB forum. New routes
 ## Installation
 
     npm install nodebb-plugin-custom-pages
-
-## TODO
-
-* Move all widgets to draft zone if you delete a static page
