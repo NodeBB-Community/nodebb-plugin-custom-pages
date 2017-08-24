@@ -3,7 +3,8 @@
 
 var plugin = {},
 	db = module.parent.require('./database'),
-	hotswap = module.parent.require('./hotswap');
+	hotswap = module.parent.require('./hotswap'),
+	user = module.parent.require('./user');
 
 var nconf = module.parent.require('nconf'),
 	async = module.parent.require('async'),
@@ -15,10 +16,18 @@ var nconf = module.parent.require('nconf'),
 var	fs = require('fs'),
 	path = require('path');
 
-function renderCustomPage(req, res) {
+function renderCustomPage(req, res, next) {
 	var path = req.path.replace(/\/(api\/)?/, '').replace(/\/$/, '');
-	res.render(path, {
-		title: plugin.pagesHash[path].name
+	
+	user.getUsers([req.uid], req.uid, function(err, user) {
+		if (err) {
+			return next(err);
+		}
+
+		res.render(path, {
+			title: plugin.pagesHash[path].name,
+			user: user[0],
+		});
 	});
 }
 
