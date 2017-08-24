@@ -38,15 +38,15 @@
         <span class="pull-right"><i class="fa fa-times pointer"></i></span>
 
         <label>Name of page
-        <input type="text" class="form-control" name="name" value="" />
+        <input type="text" class="form-control" name="name" value="" placeholder="Page Title" />
         </label>
 
         <label>Route (no spaces)
-        <input type="text" class="form-control" name="route" value="" />
+        <input type="text" class="form-control" name="route" value="" placeholder="/my-page" />
         </label>
 
         <label>Custom CSS Class
-        <input type="text" class="form-control" name="class" value="" />
+        <input type="text" class="form-control" name="class" value="" placeholder="" />
         </label>
     </form>
 </div>
