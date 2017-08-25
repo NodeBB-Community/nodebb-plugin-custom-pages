@@ -58,8 +58,7 @@ define('admin/plugins/custom-pages', [], function () {
 				arr.push({
 					name: data[0].value,
 					route: data[1].value,
-					class: data[2].value,
-					groups: data[3].value,
+					groups: data[2].value,
 				});
 			}
 		});

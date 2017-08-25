@@ -187,27 +187,6 @@ plugin.addAdminNavigation = function (header, callback) {
 	callback(null, header);
 };
 
-plugin.addNavigation = function (header, callback) {
-	getCustomPages(function (err, data) {
-		if (err) {
-			return callback(err);
-		}
-
-		for (var d in data) {
-			if (data.hasOwnProperty(d)) {
-				header.navigation.push({
-					class: data[d].class,
-					route: '/' + data[d].route,
-					text: data[d].name,
-					title: data[d].name,
-				});
-			}
-		}
-
-		callback(null, header);
-	});
-};
-
 plugin.init = function (params, callback) {
 	var app = params.router;
 

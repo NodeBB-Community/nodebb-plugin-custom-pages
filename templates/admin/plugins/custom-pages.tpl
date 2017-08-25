@@ -15,18 +15,14 @@
                 <form>
                     <span class="pull-right"><i class="fa fa-times pointer"></i></span>
 
-                    <label>Name of page
+                    <label>Page Title
                     <input type="text" class="form-control" name="name" value="{pages.name}" placeholder="Page Title" />
                     </label>
 
-                    <label>Route (no spaces)
+                    <label>Route
                     <input type="text" class="form-control" name="route" value="{pages.route}" placeholder="/my-page" />
                     </label>
 
-                    <label>Custom CSS Class
-                    <input type="text" class="form-control" name="class" value="{pages.class}" placeholder="" />
-                    </label>
-                    
                     <br /><br />
                     <label>Restrict access to groups (leave blank for public):
                     <input type="text" class="form-control groups-list" name="groups" value="{pages.groups}" placeholder="" />
@@ -42,16 +38,17 @@
     <form>
         <span class="pull-right"><i class="fa fa-times pointer"></i></span>
 
-        <label>Name of page
+        <label>Page Title
         <input type="text" class="form-control" name="name" value="" placeholder="Page Title" />
         </label>
 
-        <label>Route (no spaces)
+        <label>Route
         <input type="text" class="form-control" name="route" value="" placeholder="/my-page" />
         </label>
 
-        <label>Custom CSS Class
-        <input type="text" class="form-control" name="class" value="" placeholder="" />
+        <br /><br />
+        <label>Restrict access to groups (leave blank for public):
+        <input type="text" class="form-control groups-list" name="groups" value="{pages.groups}" placeholder="" />
         </label>
     </form>
 </div>
