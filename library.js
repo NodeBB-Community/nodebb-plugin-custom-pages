@@ -4,7 +4,8 @@
 var plugin = {},
 	db = module.parent.require('./database'),
 	hotswap = module.parent.require('./hotswap'),
-	user = module.parent.require('./user');
+	user = module.parent.require('./user'),
+	widgets = module.parent.require('./widgets');
 
 var nconf = module.parent.require('nconf'),
 	async = module.parent.require('async'),
@@ -18,7 +19,7 @@ var	fs = require('fs'),
 
 function renderCustomPage(req, res, next) {
 	var path = req.path.replace(/\/(api\/)?/, '').replace(/\/$/, '');
-	
+
 	user.getUsers([req.uid], req.uid, function(err, user) {
 		if (err) {
 			return next(err);
@@ -157,6 +158,8 @@ plugin.init = function(params, callback) {
 
 	var SocketAdmin = module.parent.require('./socket.io/admin');
 	SocketAdmin.settings.saveCustomPages = function(socket, data, callback) {
+		resetWidgets(data);
+
 		delete plugin.pagesCache;
 		delete plugin.pagesHash;
 
@@ -208,5 +211,20 @@ plugin.reloadRoutes = function(callback) {
 		});
 	});
 };
+
+function resetWidgets(data, callback) {
+	var removedRoutes = [];
+	Object.keys(plugin.pagesHash).forEach(function(route) {
+		var match = data.find(function(page) {
+			return page.route === route;
+		});
+
+		if (!match) {
+			removedRoutes.push(route);
+		}
+	});
+	
+	widgets.resetTemplates(removedRoutes, callback);
+}
 
 module.exports = plugin;
