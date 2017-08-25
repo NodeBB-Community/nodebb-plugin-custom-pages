@@ -21,6 +21,11 @@
   "nbbpm": {
     "compatibility": "^1.6.0"
   },
+  "devDependencies": {
+    "eslint": "^3.12.0",
+    "eslint-config-airbnb-base": "^11.1.0",
+    "eslint-plugin-import": "^2.2.0"
+  },
   "license": "BSD-2-Clause",
   "bugs": {
     "url": "https://github.com/psychobunny/nodebb-plugin-custom-pages/issues"
