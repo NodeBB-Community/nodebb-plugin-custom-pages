@@ -8,7 +8,10 @@
            You can add content to your new routes from <a href="{config.relative_path}/admin/extend/widgets">Extend &rarr; Widgets</a>.
         </p>
         <p>
-            By default, your routes are only accessible if you know the URL. You can add your new route to the site navigation from <a href="{config.relative_path}/admin/general/navigation">General &rarr; Navigation</a>
+            You can add your new route to the site navigation from <a href="{config.relative_path}/admin/general/navigation">General &rarr; Navigation</a> and select "Custom Route".
+        </p>
+        <p>
+            If you wish to set a custom page as your homepage, go to <a href="{config.relative_path}/admin/general/homepage">General &rarr; Homepage</a> and select "Custom".
         </p>
         
         <div id="custom-pages">
@@ -21,7 +24,7 @@
                     <input type="text" class="form-control" name="name" value="{pages.name}" placeholder="Page Title" />
                     </label>
 
-                    <label>Route
+                    <label>Path to Page
                     <input type="text" class="form-control" name="route" value="{pages.route}" placeholder="/my-page" />
                     </label>
 
@@ -44,7 +47,7 @@
         <input type="text" class="form-control" name="name" value="" placeholder="Page Title" />
         </label>
 
-        <label>Route
+        <label>Path to Page
         <input type="text" class="form-control" name="route" value="" placeholder="/my-page" />
         </label>
 
