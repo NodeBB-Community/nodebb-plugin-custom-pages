@@ -34,7 +34,7 @@ function renderCustomPage(req, res, next) {
 
 function renderAdmin(req, res) {
 	getCustomPages(function(err, data) {
-		res.render('admin/custom-pages', {
+		res.render('admin/plugins/custom-pages', {
 			pages: data
 		});
 	});
@@ -123,9 +123,9 @@ plugin.setWidgetAreas = function(areas, callback) {
 
 plugin.addAdminNavigation = function(header, callback) {
 	header.plugins.push({
-		route: '/custom-pages',
+		route: '/plugins/custom-pages',
 		icon: 'fa-mobile',
-		name: 'Custom Static Pages'
+		name: 'Custom Pages'
 	});
 
 	callback(null, header);
@@ -153,8 +153,8 @@ plugin.init = function(params, callback) {
 
 	middleware = params.middleware;
 		
-	app.get('/admin/custom-pages', middleware.admin.buildHeader, renderAdmin);
-	app.get('/api/admin/custom-pages', renderAdmin);
+	app.get('/admin/plugins/custom-pages', middleware.admin.buildHeader, renderAdmin);
+	app.get('/api/admin/plugins/custom-pages', renderAdmin);
 
 	var SocketAdmin = module.parent.require('./socket.io/admin');
 	SocketAdmin.settings.saveCustomPages = function(socket, data, callback) {

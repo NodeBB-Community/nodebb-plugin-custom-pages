@@ -1,6 +1,6 @@
 {
 	"id": "nodebb-plugin-custom-pages",
-	"name": "Custom Static pages for NodeBB",
+	"name": "Custom pages for NodeBB",
 	"description": "Allows you to add as many new pages as you like to your NodeBB forum",
 	"url": "https://github.com/NodeBB/nodebb-plugin-custom-pages",
 	"library": "./library.js",
