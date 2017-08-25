@@ -3,6 +3,8 @@
 /* globals define, $, socket, app, ajaxify, jQuery */
 
 define('admin/plugins/custom-pages', [], function () {
+	var admin = {};
+
 	function addCloseHandler() {
 		$('#custom-pages .fa-times').on('click', function () {
 			$(this).parents('.well').remove();
@@ -40,32 +42,36 @@ define('admin/plugins/custom-pages', [], function () {
 		});
 	}
 
-	$('#add').on('click', function () {
-		var clone = $('.template').clone().removeClass('template hidden');
-		$('#custom-pages').append(clone);
+	admin.init = function () {
+		$('#add').on('click', function () {
+			var clone = $('.template').clone().removeClass('template hidden');
+			$('#custom-pages').append(clone);
+
+			addCloseHandler();
+			addTagsInputForGroups(clone.find('.groups-list'));
+		});
 
 		addCloseHandler();
-		addTagsInputForGroups(clone.find('.groups-list'));
-	});
+		addTagsInputForGroups();
 
-	addCloseHandler();
-	addTagsInputForGroups();
+		$('#save').on('click', function () {
+			var arr = [];
+			$('#custom-pages .well form').each(function () {
+				var data = $(this).serializeArray();
+				if (data[1].value && !data[1].value.match(' ') && data[1].value !== '') {
+					arr.push({
+						name: data[0].value,
+						route: data[1].value,
+						groups: data[2].value,
+					});
+				}
+			});
 
-	$('#save').on('click', function () {
-		var arr = [];
-		$('#custom-pages .well form').each(function () {
-			var data = $(this).serializeArray();
-			if (data[1].value && !data[1].value.match(' ') && data[1].value !== '') {
-				arr.push({
-					name: data[0].value,
-					route: data[1].value,
-					groups: data[2].value,
-				});
-			}
+			socket.emit('admin.settings.saveCustomPages', arr, function () {
+				app.alertSuccess('Custom pages saved and activated');
+			});
 		});
+	};
 
-		socket.emit('admin.settings.saveCustomPages', arr, function () {
-			app.alertSuccess('Custom pages saved and activated');
-		});
-	});
+	return admin;
 });
