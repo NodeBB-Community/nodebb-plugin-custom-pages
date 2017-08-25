@@ -9,8 +9,8 @@ define('admin/plugins/custom-pages', [], function () {
 		});
 	}
 
-	function addTagsInputForGroups() {
-		var el = $('.groups-list');
+	function addTagsInputForGroups(el) {
+		el = el || $('#custom-pages .groups-list');
 
 		el.tagsinput({
 			confirmKeys: [13, 44],
@@ -45,6 +45,7 @@ define('admin/plugins/custom-pages', [], function () {
 		$('#custom-pages').append(clone);
 
 		addCloseHandler();
+		addTagsInputForGroups(clone.find('.groups-list'));
 	});
 
 	addCloseHandler();
