@@ -5,10 +5,10 @@ Allows you to add as many new pages as you like to your NodeBB forum. Each new p
 ### Tips
 
 * You can set custom permissions for each individual page (ex. group-level access, or registered users only access, etc).
-* Use NodeBB's widget system (Extend -> Widgets) to add any type of content.
+* Use NodeBB's widget system (_Extend -> Widgets_) to add any type of content.
 * Utilize [benchpress](https://github.com/benchpressjs/benchpressjs) markup for advanced logic.
-* Add a navigation link in the header that points to your custom page in General -> Navigation and selecting "Custom Route".
-* Make a custom page your landing page / homepage under General -> Homepage and selecting "Custom"
+* Add a navigation link in the header that points to your custom page in _General -> Navigation_ and selecting "Custom Route".
+* Make a custom page your landing page / homepage under _General -> Homepage_ and selecting "Custom"
 
 ## Manual Installation
 
