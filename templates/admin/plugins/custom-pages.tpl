@@ -26,6 +26,11 @@
                     <label>Custom CSS Class
                     <input type="text" class="form-control" name="class" value="{pages.class}" placeholder="" />
                     </label>
+                    
+                    <br /><br />
+                    <label>Restrict access to groups (leave blank for public):
+                    <input type="text" class="form-control groups-list" name="groups" value="{pages.groups}" placeholder="" />
+                    </label>
                 </form>
             </div>
             <!-- END pages -->

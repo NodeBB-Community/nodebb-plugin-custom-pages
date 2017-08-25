@@ -5,6 +5,8 @@ var db = module.parent.require('./database');
 var hotswap = module.parent.require('./hotswap');
 var user = module.parent.require('./user');
 var widgets = module.parent.require('./widgets');
+var groups = module.parent.require('./groups');
+var controllerHelpers = module.parent.require('./controllers/helpers');
 
 var nconf = module.parent.require('nconf');
 var async = module.parent.require('async');
@@ -18,27 +20,60 @@ var path = require('path');
 
 function renderCustomPage(req, res, next) {
 	var path = req.path.replace(/\/(api\/)?/, '').replace(/\/$/, '');
+	var groupList = plugin.pagesHash[path].groups.split(',');
 
-	user.getUsers([req.uid], req.uid, function (err, user) {
+	async.waterfall([
+		function (next) {
+			user.isAdministrator(req.uid, next);
+		},
+		function (isAdministrator, next) {
+			if (!groupList.length || isAdministrator) {
+				return next(null, [true]);
+			}
+
+			groups.isMemberOfGroups(req.uid, groupList, next);
+		},
+		function (groupMembership, next) {
+			if (!groupMembership.some(function (a) { return a; })) {
+				return controllerHelpers.notAllowed(req, res);
+			}
+
+			next();
+		},
+	], function (err) {
 		if (err) {
 			return next(err);
 		}
 
-		res.render(path, {
-			title: plugin.pagesHash[path].name,
-			user: user[0],
+		user.getUsers([req.uid], req.uid, function (err, user) {
+			if (err) {
+				return next(err);
+			}
+
+			res.render(path, {
+				title: plugin.pagesHash[path].name,
+				user: user[0],
+			});
 		});
 	});
 }
 
 function renderAdmin(req, res, next) {
-	getCustomPages(function (err, data) {
+	async.parallel({
+		pages: function (next) {
+			getCustomPages(next);
+		},
+		groups: function (next) {
+			getGroupList(next);
+		},
+	}, function (err, data) {
 		if (err) {
 			return next(err);
 		}
 
 		res.render('admin/plugins/custom-pages', {
-			pages: data,
+			pages: data.pages,
+			groups: data.groups,
 		});
 	});
 }
@@ -75,6 +110,20 @@ function getCustomPages(callback) {
 		} catch (err) {
 			callback(err);
 		}
+	});
+}
+
+function getGroupList(callback) {
+	var list = [];
+
+	groups.getGroups('groups:createtime', 0, -1, function (err, groups) {
+		groups.forEach(function (group) {
+			if ((group.match(/cid:([0-9]*):privileges:groups:([\s\S]*)/)) === null) {
+				list.push(group);
+			}
+		});
+
+		callback(err, list);
 	});
 }
 

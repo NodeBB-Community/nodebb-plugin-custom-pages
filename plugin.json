@@ -27,8 +27,8 @@
 	"staticDirs": {
 		"static": "./static"
 	},
-	"less": [
-		"static/style.less"
+	"acpLess": [
+		"static/admin.less"
 	],
 	"acpScripts": [
 		"static/lib/admin.js"

@@ -1,11 +1,42 @@
 'use strict';
 
-/* globals define, $, socket, app */
+/* globals define, $, socket, app, ajaxify, jQuery */
 
 define('admin/plugins/custom-pages', [], function () {
 	function addCloseHandler() {
 		$('#custom-pages .fa-times').on('click', function () {
 			$(this).parents('.well').remove();
+		});
+	}
+
+	function addTagsInputForGroups() {
+		var el = $('.groups-list');
+
+		el.tagsinput({
+			confirmKeys: [13, 44],
+			trimValue: true,
+		});
+
+		app.loadJQueryUI(function () {
+			var input = $('.page-admin-custom-pages .bootstrap-tagsinput input');
+			input.autocomplete({
+				delay: 100,
+				position: { my: 'left bottom', at: 'left top', collision: 'flip' },
+				open: function () {
+					$(this).autocomplete('widget').css('z-index', 20000);
+				},
+				source: ajaxify.data.groups,
+				select: function () {
+                    // when autocomplete is selected from the dropdown simulate a enter key down to turn it into a tag
+					// http://stackoverflow.com/a/3276819/583363
+					var e = jQuery.Event('keypress');
+					e.which = 13;
+					e.keyCode = 13;
+					setTimeout(function () {
+						input.trigger(e);
+					}, 100);
+				},
+			});
 		});
 	}
 
@@ -17,6 +48,7 @@ define('admin/plugins/custom-pages', [], function () {
 	});
 
 	addCloseHandler();
+	addTagsInputForGroups();
 
 	$('#save').on('click', function () {
 		var arr = [];
@@ -27,6 +59,7 @@ define('admin/plugins/custom-pages', [], function () {
 					name: data[0].value,
 					route: data[1].value,
 					class: data[2].value,
+					groups: data[3].value,
 				});
 			}
 		});
