@@ -9,6 +9,8 @@
         </p>
         <p>
             By default, your routes are only accessible if you know the URL. You can add your new route to the site navigation from <a href="{config.relative_path}/admin/general/navigation">General &rarr; Navigation</a>
+        </p>
+        
         <div id="custom-pages">
             <!-- BEGIN pages -->
             <div class="well">
