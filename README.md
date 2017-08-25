@@ -1,9 +1,15 @@
 # Custom Pages for NodeBB
 
-Allows you to add as many new pages as you like to your NodeBB forum. New routes get added to the header automatically. Each new page has four widget areas (header, footer, content, and sidebar) which you can use to add HTML to in the Widgets ACP.
+Allows you to add as many new pages as you like to your NodeBB forum. Each new page has four widget areas (header, footer, content, and sidebar) which you can use to add HTML to in the Widgets ACP.
 
-**New in 0.7x: Routes are no longer automatically added to the header. If you want to add an icon/text link to the header to your new route, visit General -> Navigation and use the drag and drop interface to do so.**
+### Tips
 
-## Installation
+* You can set custom permissions for each individual page (ex. group-level access, or registered users only access, etc).
+* Use NodeBB's widget system (Extend -> Widgets) to add any type of content.
+* Utilize [benchpress](https://github.com/benchpressjs/benchpressjs) markup for advanced logic.
+* Add a navigation link in the header that points to your custom page in General -> Navigation and selecting "Custom Route".
+* Make a custom page your landing page / homepage under General -> Homepage and selecting "Custom"
+
+## Manual Installation
 
     npm install nodebb-plugin-custom-pages
