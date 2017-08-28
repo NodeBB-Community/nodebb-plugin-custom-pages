@@ -1,3 +1,5 @@
+![](https://packages.nodebb.org/api/v1/plugins/nodebb-plugin-custom-pages/compatibility.png)
+
 # Custom Pages for NodeBB
 
 Allows you to add as many new pages as you like to your NodeBB forum. Each new page has four widget areas (header, footer, content, and sidebar) which you can use to add HTML to in the Widgets ACP.
