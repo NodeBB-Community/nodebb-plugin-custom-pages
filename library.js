@@ -20,7 +20,7 @@ var path = require('path');
 
 function renderCustomPage(req, res, next) {
 	var path = req.path.replace(/\/(api\/)?/, '').replace(/\/$/, '');
-	var groupList = plugin.pagesHash[path].groups.split(',');
+	var groupList = (plugin.pagesHash[path].groups || '').split(',');
 
 	async.waterfall([
 		function (next) {
