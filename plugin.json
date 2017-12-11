@@ -16,9 +16,6 @@
 		},
 		{
 			"hook": "filter:widgets.getAreas", "method": "setWidgetAreas"
-		},
-		{
-			"hook": "filter:templates.get_virtual", "method": "setAvailableTemplates"
 		}
 	],
 	"staticDirs": {

@@ -132,18 +132,6 @@ plugin.prepare = function (hotswapIds, callback) {
 	callback(null, hotswapIds);
 };
 
-plugin.setAvailableTemplates = function (templates, callback) {
-	getCustomPages(function (err, data) {
-		for (var d in data) {
-			if (data.hasOwnProperty(d)) {
-				templates.push(data[d].route + '.tpl');
-			}
-		}
-
-		callback(err, templates);
-	});
-};
-
 plugin.setWidgetAreas = function (areas, callback) {
 	getCustomPages(function (err, data) {
 		for (var d in data) {
