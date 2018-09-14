@@ -202,6 +202,7 @@ plugin.init = function (params, callback) {
 plugin.reloadRoutes = function (callback) {
 	var pagesRouter = express.Router();
 	var helpers = module.parent.require('./routes/helpers');
+	var bjs = module.parent.require('benchpressjs');
 
 	pagesRouter.hotswapId = 'custom-pages';
 
@@ -220,19 +221,39 @@ plugin.reloadRoutes = function (callback) {
 			async.each(pages, function (pageObj, next) {
 				var route = pageObj.route;
 				helpers.setupPageRoute(pagesRouter, '/' + route, middleware, [], renderCustomPage);
+				var jsPath = path.join(nconf.get('views_dir'), route + '.js');
+				var tplPath = path.join(nconf.get('views_dir'), route + '.tpl');
 
-				if (path.dirname(route) !== '.') {
-					// Subdirectories specified
-					mkdirp(path.join(nconf.get('views_dir'), path.dirname(route)), function (err) {
-						if (err) {
-							return next(err);
-						}
+				bjs.precompile(customTPL, {}, function (err, compiled) {
+					if (err) {
+						return next(err);
+					}
 
-						fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL, next);
-					});
-				} else {
-					fs.writeFile(path.join(nconf.get('views_dir'), route + '.tpl'), customTPL, next);
-				}
+					if (path.dirname(route) !== '.') {
+						// Subdirectories specified
+						mkdirp(path.join(nconf.get('views_dir'), path.dirname(route)), function (err) {
+							if (err) {
+								return next(err);
+							}
+
+							fs.writeFile(jsPath, compiled, function (err) {
+								if (err) {
+									return next(err);
+								}
+
+								fs.writeFile(tplPath, customTPL, next);
+							});
+						});
+					} else {
+						fs.writeFile(jsPath, compiled, function (err) {
+							if (err) {
+								return next(err);
+							}
+
+							fs.writeFile(tplPath, customTPL, next);
+						});
+					}
+				});
 			}, function (err) {
 				if (err) {
 					winston.error('[plugin/custom-pages] Could not re-initialise routes!');
