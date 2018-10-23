@@ -9,9 +9,6 @@
 			"hook": "static:app.load", "method": "init"
 		},
 		{
-			"hook": "filter:hotswap.prepare", "method": "prepare"
-		},
-		{
 			"hook": "filter:admin.header.build", "method": "addAdminNavigation"
 		},
 		{
