@@ -2,7 +2,6 @@
 
 var plugin = {};
 var db = module.parent.require('./database');
-var hotswap = module.parent.require('./hotswap');
 var user = module.parent.require('./user');
 var widgets = module.parent.require('./widgets');
 var groups = module.parent.require('./groups');
@@ -127,11 +126,6 @@ function getGroupList(callback) {
 	});
 }
 
-plugin.prepare = function (hotswapIds, callback) {
-	hotswapIds.push('custom-pages');
-	callback(null, hotswapIds);
-};
-
 plugin.setWidgetAreas = function (areas, callback) {
 	getCustomPages(function (err, data) {
 		for (var d in data) {
@@ -204,8 +198,6 @@ plugin.reloadRoutes = function (callback) {
 	var helpers = module.parent.require('./routes/helpers');
 	var bjs = module.parent.require('benchpressjs');
 
-	pagesRouter.hotswapId = 'custom-pages';
-
 	fs.readFile(path.join(__dirname, 'templates/custom-page.tpl'), function (err, customTPL) {
 		if (err) {
 			return callback(err);
@@ -261,7 +253,6 @@ plugin.reloadRoutes = function (callback) {
 					return callback(err);
 				}
 
-				hotswap.replace('custom-pages', pagesRouter);
 				callback();
 			});
 		});
