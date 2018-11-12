@@ -190,11 +190,10 @@ plugin.init = function (params, callback) {
 		], callback);
 	};
 
-	plugin.reloadRoutes(callback);
+	plugin.reloadRoutes(app, callback);
 };
 
-plugin.reloadRoutes = function (callback) {
-	var pagesRouter = express.Router();
+plugin.reloadRoutes = function (router, callback) {
 	var helpers = module.parent.require('./routes/helpers');
 	var bjs = module.parent.require('benchpressjs');
 
@@ -212,7 +211,7 @@ plugin.reloadRoutes = function (callback) {
 
 			async.each(pages, function (pageObj, next) {
 				var route = pageObj.route;
-				helpers.setupPageRoute(pagesRouter, '/' + route, middleware, [], renderCustomPage);
+				helpers.setupPageRoute(router, '/' + route, middleware, [], renderCustomPage);
 				var jsPath = path.join(nconf.get('views_dir'), route + '.js');
 				var tplPath = path.join(nconf.get('views_dir'), route + '.tpl');
 
