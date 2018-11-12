@@ -1,24 +1,34 @@
 'use strict';
 
-var plugin = {};
-var db = module.parent.require('./database');
-var user = module.parent.require('./user');
-var widgets = module.parent.require('./widgets');
-var groups = module.parent.require('./groups');
-var controllerHelpers = module.parent.require('./controllers/helpers');
+var plugin = module.exports;
 
-var nconf = module.parent.require('nconf');
-var async = module.parent.require('async');
-var mkdirp = module.parent.require('mkdirp');
-var winston = module.parent.require('winston');
-var express = module.parent.require('express');
+var nconf = require.main.require('nconf');
+var async = require.main.require('async');
+var mkdirp = require.main.require('mkdirp');
+var winston = require.main.require('winston');
+
+var db = require.main.require('./src/database');
+var user = require.main.require('./src/user');
+var widgets = require.main.require('./src/widgets');
+var groups = require.main.require('./src/groups');
+var controllerHelpers = require.main.require('./src/controllers/helpers');
+var pubsub = require.main.require('./src/pubsub');
+
 var middleware;
 
-var	fs = require('fs');
+var fs = require('fs');
 var path = require('path');
 
+pubsub.on('custom-pages:save', function (pages) {
+	storeData(pages);
+});
+
+function cleanPath(path) {
+	return path.replace(/\/(api\/)?/, '').replace(/\/$/, '');
+}
+
 function renderCustomPage(req, res, next) {
-	var path = req.path.replace(/\/(api\/)?/, '').replace(/\/$/, '');
+	var path = cleanPath(req.path);
 	var groupList = plugin.pagesHash[path].groups ? plugin.pagesHash[path].groups.split(',') : [];
 
 	async.waterfall([
@@ -37,24 +47,15 @@ function renderCustomPage(req, res, next) {
 				return controllerHelpers.notAllowed(req, res);
 			}
 
-			next();
+			user.getUsers([req.uid], req.uid, next);
 		},
-	], function (err) {
-		if (err) {
-			return next(err);
-		}
-
-		user.getUsers([req.uid], req.uid, function (err, user) {
-			if (err) {
-				return next(err);
-			}
-
+		function (users) {
 			res.render(path, {
 				title: plugin.pagesHash[path].name,
-				user: user[0],
+				user: users[0],
 			});
-		});
-	});
+		},
+	], next);
 }
 
 function renderAdmin(req, res, next) {
@@ -88,22 +89,7 @@ function getCustomPages(callback) {
 		}
 
 		try {
-			var pages = JSON.parse(data);
-
-			if (pages == null) {
-				pages = [];
-			}
-
-			// Eliminate errors in route definition
-			plugin.pagesCache = pages.map(function (pageObj) {
-				pageObj.route = pageObj.route.replace(/^\/*/g, '');	// trim leading slashes from route
-				return pageObj;
-			});
-
-			plugin.pagesHash = plugin.pagesCache.reduce(function (memo, cur) {
-				memo[cur.route] = cur;
-				return memo;
-			}, {});
+			storeData(JSON.parse(data));
 
 			callback(null, plugin.pagesCache);
 		} catch (err) {
@@ -112,22 +98,38 @@ function getCustomPages(callback) {
 	});
 }
 
+function storeData(pages) {
+	if (pages == null) {
+		pages = [];
+	}
+
+	// Eliminate errors in route definition
+	plugin.pagesCache = pages.map(function (pageObj) {
+		pageObj.route = pageObj.route.replace(/^\/*/g, '');	// trim leading slashes from route
+		return pageObj;
+	});
+
+	plugin.pagesHash = plugin.pagesCache.reduce(function (memo, cur) {
+		memo[cur.route] = cur;
+		return memo;
+	}, {});
+}
+
 function getGroupList(callback) {
-	var list = [];
-
-	groups.getGroups('groups:createtime', 0, -1, function (err, groups) {
-		groups.forEach(function (group) {
-			if ((group.match(/cid:([0-9]*):privileges:groups:([\s\S]*)/)) === null) {
-				list.push(group);
-			}
-		});
-
-		callback(err, list);
+	groups.getGroups('groups:createtime', 0, -1, function (err, groupNames) {
+		if (err) {
+			return callback(err);
+		}
+		groupNames = groupNames.filter(groupName => !groups.isPrivilegeGroup(groupName));
+		callback(null, groupNames);
 	});
 }
 
 plugin.setWidgetAreas = function (areas, callback) {
 	getCustomPages(function (err, data) {
+		if (err) {
+			return callback(err);
+		}
 		for (var d in data) {
 			if (data.hasOwnProperty(d)) {
 				areas = areas.concat([
@@ -155,7 +157,7 @@ plugin.setWidgetAreas = function (areas, callback) {
 			}
 		}
 
-		callback(err, areas);
+		callback(null, areas);
 	});
 };
 
@@ -171,38 +173,50 @@ plugin.addAdminNavigation = function (header, callback) {
 
 plugin.init = function (params, callback) {
 	var app = params.router;
+	var middleware = params.middleware;
 
-	middleware = params.middleware;
+	var helpers = require.main.require('./src/routes/helpers');
+	helpers.setupAdminPageRoute(app, '/admin/plugins/custom-pages', middleware, [], renderAdmin);
 
-	app.get('/admin/plugins/custom-pages', middleware.admin.buildHeader, renderAdmin);
-	app.get('/api/admin/plugins/custom-pages', renderAdmin);
+	app.get('*', function routeToCustomPage(req, res, next) {
+		if (!plugin.pagesHash || !plugin.pagesHash[cleanPath(req.path)]) {
+			return setImmediate(next);
+		}
 
-	var SocketAdmin = module.parent.require('./socket.io/admin');
+		res.locals.isAPI = req.path.startsWith('/api');
+		let middlewares = [middleware.maintenanceMode, middleware.registrationComplete, middleware.pageView, middleware.pluginHooks];
+		if (!res.locals.isAPI) {
+			middlewares = [middleware.busyCheck, middleware.buildHeader].concat(middlewares);
+		}
+		async.eachSeries(middlewares, function (middleware, next) {
+			middleware(req, res, next);
+		}, function (err) {
+			if (err) {
+				return next(err);
+			}
+			renderCustomPage(req, res, next);
+		});
+	});
+
+	var SocketAdmin = require.main.require('./src/socket.io/admin');
 	SocketAdmin.settings.saveCustomPages = function (socket, data, callback) {
 		resetWidgets(data);
 
-		delete plugin.pagesCache;
-		delete plugin.pagesHash;
+		pubsub.publish('custom-pages:save', data);
 
-		async.series([
-			async.apply(db.set, 'plugins:custom-pages', JSON.stringify(data)),
-			async.apply(plugin.reloadRoutes, app),
-		], callback);
+		db.set('plugins:custom-pages', JSON.stringify(data), callback);
 	};
 
-	plugin.reloadRoutes(app, callback);
+	plugin.reloadRoutes(callback);
 };
 
-plugin.reloadRoutes = function (router, callback) {
-	var helpers = module.parent.require('./routes/helpers');
-	var bjs = module.parent.require('benchpressjs');
+plugin.reloadRoutes = function (callback) {
+	var bjs = require.main.require('benchpressjs');
 
-	fs.readFile(path.join(__dirname, 'templates/custom-page.tpl'), function (err, customTPL) {
+	fs.readFile(path.join(__dirname, 'templates/custom-page.tpl'), 'utf-8', function (err, customTPL) {
 		if (err) {
 			return callback(err);
 		}
-
-		customTPL = customTPL.toString();
 
 		getCustomPages(function (err, pages) {
 			if (err) {
@@ -211,7 +225,7 @@ plugin.reloadRoutes = function (router, callback) {
 
 			async.each(pages, function (pageObj, next) {
 				var route = pageObj.route;
-				helpers.setupPageRoute(router, '/' + route, middleware, [], renderCustomPage);
+
 				var jsPath = path.join(nconf.get('views_dir'), route + '.js');
 				var tplPath = path.join(nconf.get('views_dir'), route + '.tpl');
 
@@ -247,12 +261,11 @@ plugin.reloadRoutes = function (router, callback) {
 				});
 			}, function (err) {
 				if (err) {
-					winston.error('[plugin/custom-pages] Could not re-initialise routes!');
+					winston.error('[plugin/custom-pages] Could not save templats!');
 					winston.error('  ' + err.message);
-					return callback(err);
 				}
 
-				callback();
+				callback(err);
 			});
 		});
 	});
@@ -260,17 +273,15 @@ plugin.reloadRoutes = function (router, callback) {
 
 function resetWidgets(data, callback) {
 	var removedRoutes = [];
-	Object.keys(plugin.pagesHash).forEach(function (route) {
-		var match = data.find(function (page) {
-			return page.route === route;
-		});
+	if (plugin.pagesHash) {
+		Object.keys(plugin.pagesHash).forEach(function (route) {
+			var match = data.find(page => page.route === route);
 
-		if (!match) {
-			removedRoutes.push(route);
-		}
-	});
+			if (!match) {
+				removedRoutes.push(route);
+			}
+		});
+	}
 
 	widgets.resetTemplates(removedRoutes, callback);
 }
-
-module.exports = plugin;
