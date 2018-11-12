@@ -186,7 +186,7 @@ plugin.init = function (params, callback) {
 
 		async.series([
 			async.apply(db.set, 'plugins:custom-pages', JSON.stringify(data)),
-			async.apply(plugin.reloadRoutes),
+			async.apply(plugin.reloadRoutes, app),
 		], callback);
 	};
 
