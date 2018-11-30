@@ -14,13 +14,12 @@ var groups = require.main.require('./src/groups');
 var controllerHelpers = require.main.require('./src/controllers/helpers');
 var pubsub = require.main.require('./src/pubsub');
 
-var middleware;
-
 var fs = require('fs');
 var path = require('path');
 
 pubsub.on('custom-pages:save', function (pages) {
 	storeData(pages);
+	plugin.saveTemplates();
 });
 
 function cleanPath(path) {
@@ -206,11 +205,16 @@ plugin.init = function (params, callback) {
 
 		db.set('plugins:custom-pages', JSON.stringify(data), callback);
 	};
-
-	plugin.reloadRoutes(callback);
+	plugin.saveTemplates(callback);
 };
 
-plugin.reloadRoutes = function (callback) {
+plugin.saveTemplates = function (callback) {
+	callback = callback || function () { };
+
+	if (nconf.get('isPrimary') !== 'true') {
+		return setImmediate(callback);
+	}
+
 	var bjs = require.main.require('benchpressjs');
 
 	fs.readFile(path.join(__dirname, 'templates/custom-page.tpl'), 'utf-8', function (err, customTPL) {
@@ -240,28 +244,15 @@ plugin.reloadRoutes = function (callback) {
 							if (err) {
 								return next(err);
 							}
-
-							fs.writeFile(jsPath, compiled, function (err) {
-								if (err) {
-									return next(err);
-								}
-
-								fs.writeFile(tplPath, customTPL, next);
-							});
+							saveFiles(jsPath, tplPath, compiled, customTPL, next);
 						});
 					} else {
-						fs.writeFile(jsPath, compiled, function (err) {
-							if (err) {
-								return next(err);
-							}
-
-							fs.writeFile(tplPath, customTPL, next);
-						});
+						saveFiles(jsPath, tplPath, compiled, customTPL, next);
 					}
 				});
 			}, function (err) {
 				if (err) {
-					winston.error('[plugin/custom-pages] Could not save templats!');
+					winston.error('[plugin/custom-pages] Could not save templates!');
 					winston.error('  ' + err.message);
 				}
 
@@ -270,6 +261,16 @@ plugin.reloadRoutes = function (callback) {
 		});
 	});
 };
+
+function saveFiles(jsPath, tplPath, compiled, customTPL, callback) {
+	fs.writeFile(jsPath, compiled, function (err) {
+		if (err) {
+			return callback(err);
+		}
+
+		fs.writeFile(tplPath, customTPL, callback);
+	});
+}
 
 function resetWidgets(data, callback) {
 	var removedRoutes = [];
