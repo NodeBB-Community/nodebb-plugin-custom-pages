@@ -22,9 +22,9 @@
     "compatibility": "^1.10.2"
   },
   "devDependencies": {
-    "eslint": "^3.12.0",
-    "eslint-config-airbnb-base": "^11.1.0",
-    "eslint-plugin-import": "^2.2.0"
+    "eslint": "^6.0.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.17.3"
   },
   "license": "BSD-2-Clause",
   "bugs": {
