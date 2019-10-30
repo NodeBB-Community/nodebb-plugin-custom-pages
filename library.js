@@ -19,7 +19,7 @@ var path = require('path');
 
 pubsub.on('custom-pages:save', function (pages) {
 	storeData(pages);
-	plugin.saveTemplates();
+	plugin.saveTemplates(pages);
 });
 
 function cleanPath(path) {
@@ -205,10 +205,16 @@ plugin.init = function (params, callback) {
 
 		db.set('plugins:custom-pages', JSON.stringify(data), callback);
 	};
-	plugin.saveTemplates(callback);
+
+	getCustomPages(function (err, pages) {
+		if (err) {
+			return callback(err);
+		}
+		plugin.saveTemplates(pages, callback);
+	});
 };
 
-plugin.saveTemplates = function (callback) {
+plugin.saveTemplates = function (pages, callback) {
 	callback = callback || function () { };
 
 	if (nconf.get('isPrimary') !== 'true') {
@@ -222,42 +228,36 @@ plugin.saveTemplates = function (callback) {
 			return callback(err);
 		}
 
-		getCustomPages(function (err, pages) {
-			if (err) {
-				return callback(err);
-			}
+		async.each(pages, function (pageObj, next) {
+			var route = pageObj.route;
 
-			async.each(pages, function (pageObj, next) {
-				var route = pageObj.route;
+			var jsPath = path.join(nconf.get('views_dir'), route + '.js');
+			var tplPath = path.join(nconf.get('views_dir'), route + '.tpl');
 
-				var jsPath = path.join(nconf.get('views_dir'), route + '.js');
-				var tplPath = path.join(nconf.get('views_dir'), route + '.tpl');
-
-				bjs.precompile(customTPL, {}, function (err, compiled) {
-					if (err) {
-						return next(err);
-					}
-
-					if (path.dirname(route) !== '.') {
-						// Subdirectories specified
-						mkdirp(path.join(nconf.get('views_dir'), path.dirname(route)), function (err) {
-							if (err) {
-								return next(err);
-							}
-							saveFiles(jsPath, tplPath, compiled, customTPL, next);
-						});
-					} else {
-						saveFiles(jsPath, tplPath, compiled, customTPL, next);
-					}
-				});
-			}, function (err) {
+			bjs.precompile(customTPL, {}, function (err, compiled) {
 				if (err) {
-					winston.error('[plugin/custom-pages] Could not save templates!');
-					winston.error('  ' + err.message);
+					return next(err);
 				}
 
-				callback(err);
+				if (path.dirname(route) !== '.') {
+					// Subdirectories specified
+					mkdirp(path.join(nconf.get('views_dir'), path.dirname(route)), function (err) {
+						if (err) {
+							return next(err);
+						}
+						saveFiles(jsPath, tplPath, compiled, customTPL, next);
+					});
+				} else {
+					saveFiles(jsPath, tplPath, compiled, customTPL, next);
+				}
 			});
+		}, function (err) {
+			if (err) {
+				winston.error('[plugin/custom-pages] Could not save templates!');
+				winston.error('  ' + err.message);
+			}
+
+			callback(err);
 		});
 	});
 };
