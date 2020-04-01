@@ -13,7 +13,7 @@
         <p>
             If you wish to set a custom page as your homepage, go to <a href="{config.relative_path}/admin/general/homepage">General &rarr; Homepage</a> and select "Custom".
         </p>
-        
+
         <div id="custom-pages">
             <!-- BEGIN pages -->
             <div class="well">
@@ -39,7 +39,7 @@
     </div>
 </div>
 
-<div class="template well hidden">
+<div class="template well d-none">
     <form>
         <span class="pull-right"><i class="fa fa-times pointer"></i></span>
 

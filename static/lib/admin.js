@@ -2,9 +2,8 @@
 
 /* globals define, $, socket, app, ajaxify, jQuery */
 
-define('admin/plugins/custom-pages', [], function () {
+define('admin/plugins/custom-pages', ['jquery-ui/ui/widgets/autocomplete'], function () {
 	var admin = {};
-
 	function addCloseHandler() {
 		$('#custom-pages .fa-times').on('click', function () {
 			$(this).parents('.well').remove();
@@ -19,32 +18,30 @@ define('admin/plugins/custom-pages', [], function () {
 			trimValue: true,
 		});
 
-		app.loadJQueryUI(function () {
-			var input = $('.page-admin-custom-pages .bootstrap-tagsinput input');
-			input.autocomplete({
-				delay: 100,
-				position: { my: 'left bottom', at: 'left top', collision: 'flip' },
-				open: function () {
-					$(this).autocomplete('widget').css('z-index', 20000);
-				},
-				source: ajaxify.data.groups,
-				select: function () {
-                    // when autocomplete is selected from the dropdown simulate a enter key down to turn it into a tag
-					// http://stackoverflow.com/a/3276819/583363
-					var e = jQuery.Event('keypress');
-					e.which = 13;
-					e.keyCode = 13;
-					setTimeout(function () {
-						input.trigger(e);
-					}, 100);
-				},
-			});
+		var input = $('.page-admin-custom-pages .bootstrap-tagsinput input');
+		input.autocomplete({
+			delay: 100,
+			position: { my: 'left bottom', at: 'left top', collision: 'flip' },
+			open: function () {
+				$(this).autocomplete('widget').css('z-index', 20000);
+			},
+			source: ajaxify.data.groups,
+			select: function () {
+				// when autocomplete is selected from the dropdown simulate a enter key down to turn it into a tag
+				// http://stackoverflow.com/a/3276819/583363
+				var e = jQuery.Event('keypress');
+				e.which = 13;
+				e.keyCode = 13;
+				setTimeout(function () {
+					input.trigger(e);
+				}, 100);
+			},
 		});
 	}
 
 	admin.init = function () {
 		$('#add').on('click', function () {
-			var clone = $('.template').clone().removeClass('template hidden');
+			var clone = $('.template').clone().removeClass('template d-none');
 			$('#custom-pages').append(clone);
 
 			addCloseHandler();

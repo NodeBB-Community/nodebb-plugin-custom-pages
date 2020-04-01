@@ -15,14 +15,11 @@
 			"hook": "filter:widgets.getAreas", "method": "setWidgetAreas"
 		}
 	],
-	"staticDirs": {
-		"static": "./static"
-	},
 	"acpLess": [
 		"static/admin.less"
 	],
-	"acpScripts": [
-		"static/lib/admin.js"
-	],
+	"modules": {
+		"admin/plugins/custom-pages.js": "./static/lib/admin.js"
+	},
 	"templates": "./templates"
 }
