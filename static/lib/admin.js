@@ -41,7 +41,7 @@ define('admin/plugins/custom-pages', ['jquery-ui/ui/widgets/autocomplete'], func
 
 	admin.init = function () {
 		$('#add').on('click', function () {
-			var clone = $('.template').clone().removeClass('template d-none');
+			var clone = $('.template').clone().removeClass('template hidden');
 			$('#custom-pages').append(clone);
 
 			addCloseHandler();

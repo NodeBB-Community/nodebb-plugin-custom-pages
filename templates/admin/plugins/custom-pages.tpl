@@ -39,7 +39,7 @@
     </div>
 </div>
 
-<div class="template well d-none">
+<div class="template well hidden">
     <form>
         <span class="pull-right"><i class="fa fa-times pointer"></i></span>
 
