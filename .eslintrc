@@ -35,6 +35,7 @@
 		"import/no-unresolved": "error",
 
 		// ES6
+		"prefer-destructuring": "off",
 		"prefer-rest-params": "off",
 		"prefer-spread": "off",
 		"prefer-arrow-callback": "off",

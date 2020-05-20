@@ -21,6 +21,10 @@
   "nbbpm": {
     "compatibility": "^1.10.2"
   },
+  "dependencies": {
+    "async": "3.2.0",
+    "mkdirp": "1.0.4"
+  },
   "devDependencies": {
     "eslint": "^6.0.0",
     "eslint-config-airbnb-base": "^13.1.0",
