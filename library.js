@@ -4,7 +4,7 @@ var plugin = module.exports;
 
 var nconf = require.main.require('nconf');
 var async = require.main.require('async');
-var mkdirp = require.main.require('mkdirp');
+var mkdirp = require.main.require('mkdirp-classic');
 var winston = require.main.require('winston');
 
 var db = require.main.require('./src/database');
