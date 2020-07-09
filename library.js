@@ -169,7 +169,7 @@ plugin.addAdminNavigation = async function (header) {
 };
 
 plugin.saveTemplates = async function (pages) {
-	if (nconf.get('isPrimary') !== 'true') {
+	if (!nconf.get('isPrimary')) {
 		return;
 	}
 
