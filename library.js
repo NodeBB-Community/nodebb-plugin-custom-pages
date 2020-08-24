@@ -33,7 +33,7 @@ plugin.init = async function (params) {
 		res.locals.isAPI = req.path.startsWith('/api');
 		let middlewares = [middleware.maintenanceMode, middleware.registrationComplete, middleware.pageView, middleware.pluginHooks];
 		if (!res.locals.isAPI) {
-			middlewares = [middleware.busyCheck, middleware.buildHeader].concat(middlewares);
+			middlewares = [middleware.busyCheck, middleware.applyCSRF, middleware.buildHeader].concat(middlewares);
 		}
 		async.eachSeries(middlewares, function (middleware, next) {
 			middleware(req, res, next);
