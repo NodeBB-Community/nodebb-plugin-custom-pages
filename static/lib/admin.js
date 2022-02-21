@@ -29,7 +29,7 @@ define('admin/plugins/custom-pages', [], function () {
 				},
 				source: ajaxify.data.groups,
 				select: function () {
-                    // when autocomplete is selected from the dropdown simulate a enter key down to turn it into a tag
+					// when autocomplete is selected from the dropdown simulate a enter key down to turn it into a tag
 					// http://stackoverflow.com/a/3276819/583363
 					var e = jQuery.Event('keypress');
 					e.which = 13;
