@@ -19,7 +19,7 @@
 		"static/admin.less"
 	],
 	"modules": {
-		"../admin/plugins/custom-pages": "static/lib/admin.js"
+		"../admin/plugins/custom-pages.js": "static/lib/admin.js"
 	},
 	"templates": "./templates"
 }
