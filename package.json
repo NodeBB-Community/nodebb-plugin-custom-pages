@@ -19,7 +19,7 @@
     "email": "psycho.bunny@hotmail.com"
   },
   "nbbpm": {
-    "compatibility": "^1.14.1"
+    "compatibility": "^3.0.0"
   },
   "dependencies": {
     "async": "3.2.0",
