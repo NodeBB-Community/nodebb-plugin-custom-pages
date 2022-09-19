@@ -1,6 +1,6 @@
 <div class="row">
-    <div class="col-sm-2 col-xs-12 settings-header">Active Routes</div>
-    <div class="col-sm-10 col-xs-12">
+    <div class="col-sm-2 col-12 settings-header">Active Routes</div>
+    <div class="col-sm-10 col-12">
         <p class="lead">
             Define and customise your new routes here.
         </p>
@@ -13,25 +13,26 @@
         <p>
             If you wish to set a custom page as your homepage, go to <a href="{config.relative_path}/admin/general/homepage">General &rarr; Homepage</a> and select "Custom".
         </p>
-        
+
         <div id="custom-pages">
             <!-- BEGIN pages -->
-            <div class="well">
+            <div class="card card-body text-bg-light">
                 <form>
-                    <span class="pull-right"><i class="fa fa-times pointer"></i></span>
+                    <span class="float-end"><i class="fa fa-times pointer"></i></span>
+                    <div class="mb-3">
+                        <label>Page Title
+                        <input type="text" class="form-control" name="name" value="{pages.name}" placeholder="Page Title" />
+                        </label>
 
-                    <label>Page Title
-                    <input type="text" class="form-control" name="name" value="{pages.name}" placeholder="Page Title" />
-                    </label>
+                        <label>Path to Page
+                        <input type="text" class="form-control" name="route" value="{pages.route}" placeholder="/my-page" />
+                        </label>
+                    </div>
 
-                    <label>Path to Page
-                    <input type="text" class="form-control" name="route" value="{pages.route}" placeholder="/my-page" />
-                    </label>
-
-                    <br /><br />
-                    <label>Restrict access to groups (leave blank for public):
+                    <div>
+                        <label class="form-label">Restrict access to groups (leave blank for public):</label>
+                    </div>
                     <input type="text" class="form-control groups-list" name="groups" value="{pages.groups}" placeholder="" />
-                    </label>
                 </form>
             </div>
             <!-- END pages -->
@@ -39,22 +40,23 @@
     </div>
 </div>
 
-<div class="template well hidden">
+<div class="template card card-body text-bg-light hidden">
     <form>
-        <span class="pull-right"><i class="fa fa-times pointer"></i></span>
+        <span class="float-end"><i class="fa fa-times pointer"></i></span>
+        <div class="mb-3">
+            <label>Page Title
+            <input type="text" class="form-control" name="name" value="" placeholder="Page Title" />
+            </label>
 
-        <label>Page Title
-        <input type="text" class="form-control" name="name" value="" placeholder="Page Title" />
-        </label>
+            <label>Path to Page
+            <input type="text" class="form-control" name="route" value="" placeholder="/my-page" />
+            </label>
+        </div>
 
-        <label>Path to Page
-        <input type="text" class="form-control" name="route" value="" placeholder="/my-page" />
-        </label>
-
-        <br /><br />
-        <label>Restrict access to groups (leave blank for public):
+        <div>
+        <label class="form-label">Restrict access to groups (leave blank for public):</label>
+        </div>
         <input type="text" class="form-control groups-list" name="groups" value="" placeholder="" />
-        </label>
     </form>
 </div>
 

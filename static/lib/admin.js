@@ -7,7 +7,7 @@ define('admin/plugins/custom-pages', [], function () {
 
 	function addCloseHandler() {
 		$('#custom-pages .fa-times').on('click', function () {
-			$(this).parents('.well').remove();
+			$(this).parents('.card').remove();
 		});
 	}
 
@@ -56,7 +56,7 @@ define('admin/plugins/custom-pages', [], function () {
 
 		$('#save').on('click', function () {
 			var arr = [];
-			$('#custom-pages .well form').each(function () {
+			$('#custom-pages form').each(function () {
 				var data = $(this).serializeArray();
 				if (data[1].value && !data[1].value.match(' ') && data[1].value !== '') {
 					arr.push({

@@ -15,9 +15,6 @@
 			"hook": "filter:widgets.getAreas", "method": "setWidgetAreas"
 		}
 	],
-	"acpLess": [
-		"static/admin.less"
-	],
 	"modules": {
 		"../admin/plugins/custom-pages.js": "static/lib/admin.js"
 	},
