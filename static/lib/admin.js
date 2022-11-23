@@ -2,7 +2,7 @@
 
 /* globals define, $, socket, app, ajaxify, jQuery */
 
-define('admin/plugins/custom-pages', [], function () {
+define('admin/plugins/custom-pages', ['alerts'], function (alerts) {
 	var admin = {};
 
 	function addCloseHandler() {
@@ -68,7 +68,7 @@ define('admin/plugins/custom-pages', [], function () {
 			});
 
 			socket.emit('admin.settings.saveCustomPages', arr, function () {
-				app.alertSuccess('Custom pages saved and activated');
+				alerts.success('Custom pages saved and activated');
 			});
 		});
 	};
