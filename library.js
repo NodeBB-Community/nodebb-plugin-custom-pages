@@ -23,7 +23,7 @@ plugin.init = async function (params) {
 	var middleware = params.middleware;
 
 	var helpers = require.main.require('./src/routes/helpers');
-	helpers.setupAdminPageRoute(app, '/admin/plugins/custom-pages', middleware, [], renderAdmin);
+	helpers.setupAdminPageRoute(app, '/admin/plugins/custom-pages', renderAdmin);
 
 	app.get('*', function routeToCustomPage(req, res, next) {
 		if (!plugin.pagesHash || !plugin.pagesHash[cleanPath(req.path)]) {
