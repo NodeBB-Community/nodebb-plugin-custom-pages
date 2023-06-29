@@ -90,6 +90,7 @@ async function renderAdmin(req, res) {
 		getGroupList(),
 	]);
 	res.render('admin/plugins/custom-pages', {
+		title: 'Custom Pages',
 		pages: pages,
 		groups: groups,
 	});
