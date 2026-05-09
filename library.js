@@ -90,7 +90,7 @@ async function renderAdmin(req, res) {
 		getGroupList(),
 	]);
 	res.render('admin/plugins/custom-pages', {
-		title: 'Custom Pages',
+		title: '[[custom-pages:custom-pages]]',
 		pages: pages,
 		groups: groups,
 	});
@@ -135,22 +135,22 @@ plugin.setWidgetAreas = async function (areas) {
 		if (data.hasOwnProperty(d)) {
 			areas = areas.concat([
 				{
-					name: data[d].name + ' Header',
+					name: '[[custom-pages:area-header, ' + data[d].name + ']]',
 					template: data[d].route + '.tpl',
 					location: 'header',
 				},
 				{
-					name: data[d].name + ' Footer',
+					name: '[[custom-pages:area-footer, ' + data[d].name + ']]',
 					template: data[d].route + '.tpl',
 					location: 'footer',
 				},
 				{
-					name: data[d].name + ' Sidebar',
+					name: '[[custom-pages:area-sidebar, ' + data[d].name + ']]',
 					template: data[d].route + '.tpl',
 					location: 'sidebar',
 				},
 				{
-					name: data[d].name + ' Content',
+					name: '[[custom-pages:area-content, ' + data[d].name + ']]',
 					template: data[d].route + '.tpl',
 					location: 'content',
 				},
@@ -164,7 +164,7 @@ plugin.addAdminNavigation = async function (header) {
 	header.plugins.push({
 		route: '/plugins/custom-pages',
 		icon: 'fa-mobile',
-		name: 'Custom Pages',
+		name: '[[custom-pages:custom-pages]]',
 	});
 	return header;
 };

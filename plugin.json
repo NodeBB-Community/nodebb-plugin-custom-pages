@@ -18,5 +18,7 @@
 	"modules": {
 		"../admin/plugins/custom-pages.js": "static/lib/admin.js"
 	},
-	"templates": "./templates"
+	"templates": "./templates",
+	"languages": "languages",
+	"defaultLang": "en_GB"
 }
