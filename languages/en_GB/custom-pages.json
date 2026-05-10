@@ -1,0 +1,15 @@
+{
+	"custom-pages": "Custom Pages",
+	"intro": "Define and customise your new routes here.",
+	"add-content-info": "You can add content to your new routes from <a href=\"%1/admin/extend/widgets\">Extend &rarr; Widgets</a>.",
+	"navigation-info": "You can add your new route to the site navigation from <a href=\"%1/admin/general/navigation\">General &rarr; Navigation</a> and select \"Custom Route\".",
+	"homepage-info": "If you wish to set a custom page as your homepage, go to <a href=\"%1/admin/settings/general#home-page\">General &rarr; Homepage</a> and select \"Custom\".",
+	"page-title": "Page Title",
+	"path-to-page": "Path to Page",
+	"restrict-groups": "Restrict access to groups (leave blank for public):",
+	"saved": "Custom pages saved and activated",
+	"area-header": "%1 Header",
+	"area-footer": "%1 Footer",
+	"area-sidebar": "%1 Sidebar",
+	"area-content": "%1 Content"
+}

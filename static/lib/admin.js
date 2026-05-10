@@ -68,7 +68,7 @@ define('admin/plugins/custom-pages', ['alerts'], function (alerts) {
 			});
 
 			socket.emit('admin.settings.saveCustomPages', arr, function () {
-				alerts.success('Custom pages saved and activated');
+				alerts.success('[[custom-pages:saved]]');
 			});
 		});
 	};
