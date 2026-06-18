@@ -5,33 +5,37 @@ const plugin = module.exports;
 const mkdirp = require('mkdirp');
 const async = require('async');
 
-const nconf = require.main.require('nconf');
-const winston = require.main.require('winston');
+const nconf = nodebb.require('nconf');
+const winston = nodebb.require('winston');
 
-const db = require.main.require('./src/database');
-const user = require.main.require('./src/user');
-const widgets = require.main.require('./src/widgets');
-const groups = require.main.require('./src/groups');
-const controllerHelpers = require.main.require('./src/controllers/helpers');
-const pubsub = require.main.require('./src/pubsub');
+const db = nodebb.require('./src/database');
+const user = nodebb.require('./src/user');
+const widgets = nodebb.require('./src/widgets');
+const groups = nodebb.require('./src/groups');
+const controllerHelpers = nodebb.require('./src/controllers/helpers');
+const pubsub = nodebb.require('./src/pubsub');
 
 const fs = require('fs');
 const path = require('path');
 
 plugin.init = async function (params) {
-	var app = params.router;
-	var middleware = params.middleware;
+	const { router, middleware} = params;
 
-	var helpers = require.main.require('./src/routes/helpers');
-	helpers.setupAdminPageRoute(app, '/admin/plugins/custom-pages', renderAdmin);
+	const helpers = nodebb.require('./src/routes/helpers');
+	helpers.setupAdminPageRoute(router, '/admin/plugins/custom-pages', renderAdmin);
 
-	app.get('*', function routeToCustomPage(req, res, next) {
+	router.get('*', function routeToCustomPage(req, res, next) {
 		if (!plugin.pagesHash || !plugin.pagesHash[cleanPath(req.path)]) {
 			return setImmediate(next);
 		}
 
 		res.locals.isAPI = req.path.startsWith('/api');
-		let middlewares = [middleware.maintenanceMode, middleware.registrationComplete, middleware.pageView, middleware.pluginHooks];
+		let middlewares = [
+			middleware.maintenanceMode,
+			middleware.registrationComplete,
+			middleware.pageView,
+			middleware.pluginHooks,
+		];
 		if (!res.locals.isAPI) {
 			middlewares = [middleware.busyCheck, middleware.applyCSRF, middleware.buildHeader].concat(middlewares);
 		}
@@ -45,7 +49,7 @@ plugin.init = async function (params) {
 		});
 	});
 
-	var SocketAdmin = require.main.require('./src/socket.io/admin');
+	const SocketAdmin = nodebb.require('./src/socket.io/admin');
 	SocketAdmin.settings.saveCustomPages = async function (socket, data) {
 		await resetWidgets(data);
 		pubsub.publish('custom-pages:save', data);
@@ -66,8 +70,8 @@ function cleanPath(path) {
 }
 
 async function renderCustomPage(req, res) {
-	var path = cleanPath(req.path);
-	var groupList = plugin.pagesHash[path].groups ? plugin.pagesHash[path].groups.split(',') : [];
+	const path = cleanPath(req.path);
+	const groupList = plugin.pagesHash[path].groups ? plugin.pagesHash[path].groups.split(',') : [];
 
 	const isAdmin = await user.isAdministrator(req.uid);
 
@@ -113,7 +117,7 @@ function storeData(pages) {
 
 	// Eliminate errors in route definition
 	plugin.pagesCache = pages.map(function (pageObj) {
-		pageObj.route = pageObj.route.replace(/^\/*/g, '');	// trim leading slashes from route
+		pageObj.route = pageObj.route.replace(/^\/*/g, ''); // trim leading slashes from route
 		return pageObj;
 	});
 
@@ -131,30 +135,14 @@ async function getGroupList() {
 plugin.setWidgetAreas = async function (areas) {
 	const data = await getCustomPages();
 
-	for (var d in data) {
-		if (data.hasOwnProperty(d)) {
-			areas = areas.concat([
-				{
-					name: '[[custom-pages:area-header, ' + data[d].name + ']]',
-					template: data[d].route + '.tpl',
-					location: 'header',
-				},
-				{
-					name: '[[custom-pages:area-footer, ' + data[d].name + ']]',
-					template: data[d].route + '.tpl',
-					location: 'footer',
-				},
-				{
-					name: '[[custom-pages:area-sidebar, ' + data[d].name + ']]',
-					template: data[d].route + '.tpl',
-					location: 'sidebar',
-				},
-				{
-					name: '[[custom-pages:area-content, ' + data[d].name + ']]',
-					template: data[d].route + '.tpl',
-					location: 'content',
-				},
-			]);
+	const locations = ['header', 'footer', 'sidebar', 'content'];
+	for (const page of Object.values(data)) {
+		for (const location of locations) {
+			areas.push({
+				name: `[[custom-pages:area-${location}, ${page.name}]]`,
+				template: `${page.route}.tpl`,
+				location,
+			});
 		}
 	}
 	return areas;
@@ -174,11 +162,11 @@ plugin.saveTemplates = async function (pages) {
 		return;
 	}
 
-	const bjs = require.main.require('benchpressjs');
+	const bjs = nodebb.require('benchpressjs');
 	const customTPL = await fs.promises.readFile(path.join(__dirname, 'templates/custom-page.tpl'), 'utf-8');
 	try {
 		await async.each(pages, async function (pageObj) {
-			const route = pageObj.route;
+			const { route } = pageObj;
 
 			const jsPath = path.join(nconf.get('views_dir'), route + '.js');
 			const tplPath = path.join(nconf.get('views_dir'), route + '.tpl');
@@ -204,10 +192,10 @@ async function saveFiles(jsPath, tplPath, compiled, customTPL) {
 }
 
 async function resetWidgets(data) {
-	var removedRoutes = [];
+	const removedRoutes = [];
 	if (plugin.pagesHash) {
 		Object.keys(plugin.pagesHash).forEach(function (route) {
-			var match = data.find(page => page.route === route);
+			const match = data.find(page => page.route === route);
 
 			if (!match) {
 				removedRoutes.push(route);

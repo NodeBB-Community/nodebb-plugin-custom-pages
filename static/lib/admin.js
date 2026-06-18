@@ -1,9 +1,7 @@
 'use strict';
 
-/* globals define, $, socket, app, ajaxify, jQuery */
-
 define('admin/plugins/custom-pages', ['alerts'], function (alerts) {
-	var admin = {};
+	const admin = {};
 
 	function addCloseHandler() {
 		$('#custom-pages .fa-times').on('click', function () {
@@ -20,7 +18,7 @@ define('admin/plugins/custom-pages', ['alerts'], function (alerts) {
 		});
 
 		app.loadJQueryUI(function () {
-			var input = $('.page-admin-custom-pages .bootstrap-tagsinput input');
+			const input = $('.page-admin-custom-pages .bootstrap-tagsinput input');
 			input.autocomplete({
 				delay: 100,
 				position: { my: 'left bottom', at: 'left top', collision: 'flip' },
@@ -31,7 +29,7 @@ define('admin/plugins/custom-pages', ['alerts'], function (alerts) {
 				select: function () {
 					// when autocomplete is selected from the dropdown simulate a enter key down to turn it into a tag
 					// http://stackoverflow.com/a/3276819/583363
-					var e = jQuery.Event('keypress');
+					const e = jQuery.Event('keypress');
 					e.which = 13;
 					e.keyCode = 13;
 					setTimeout(function () {
@@ -44,7 +42,7 @@ define('admin/plugins/custom-pages', ['alerts'], function (alerts) {
 
 	admin.init = function () {
 		$('#add').on('click', function () {
-			var clone = $('.template').clone().removeClass('template hidden');
+			const clone = $('.template').clone().removeClass('template hidden');
 			$('#custom-pages').append(clone);
 
 			addCloseHandler();
@@ -55,9 +53,9 @@ define('admin/plugins/custom-pages', ['alerts'], function (alerts) {
 		addTagsInputForGroups();
 
 		$('#save').on('click', function () {
-			var arr = [];
+			const arr = [];
 			$('#custom-pages form').each(function () {
-				var data = $(this).serializeArray();
+				const data = $(this).serializeArray();
 				if (data[1].value && !data[1].value.match(' ') && data[1].value !== '') {
 					arr.push({
 						name: data[0].value,
