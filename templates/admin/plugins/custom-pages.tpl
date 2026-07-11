@@ -15,7 +15,7 @@
                 {{tx("custom-pages:intro")}}
             </p>
             <p>
-               {{tx("custom-pages:add-content-info", config.relative_path)}}
+                {{tx("custom-pages:add-content-info", config.relative_path)}}
             </p>
             <p>
                 {{tx("custom-pages:navigation-info", config.relative_path)}}
@@ -42,10 +42,10 @@
                         <div>
                             <label class="form-label">{{tx("custom-pages:restrict-groups")}}</label>
                         </div>
-                        <input type="text" class="form-control groups-list" name="groups" value="{pages.groups}" placeholder="" />
+                        <input type="text" class="form-control groups-list" name="groups" value="{./groups}" placeholder="" />
                     </form>
                 </div>
-                <!-- END pages -->
+                {{{ end }}}
             </div>
         </div>
     </div>
