@@ -20,5 +20,8 @@
 	},
 	"templates": "./templates",
 	"languages": "languages",
-	"defaultLang": "en_GB"
+	"defaultLang": "en_GB",
+	"scripts": [
+		"static/lib/main.js"
+	]
 }

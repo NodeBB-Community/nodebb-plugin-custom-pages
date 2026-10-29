@@ -85,6 +85,7 @@ async function renderCustomPage(req, res) {
 	res.render(path, {
 		title: plugin.pagesHash[path].name,
 		user: userData[0],
+		customPage: true,
 	});
 }
 
